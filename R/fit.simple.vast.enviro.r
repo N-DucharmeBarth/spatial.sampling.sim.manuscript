@@ -26,7 +26,7 @@
 	enviro.dt = enviro.dt[x> 85 & x<225 & y>-35 & y < 65 & yy>=1979 & yy <= 1988]
 	enviro.dt$ts = as.numeric(as.factor(as.character(enviro.dt$time)))
 	enviro.df = data.frame(Year = enviro.dt$ts,Lon = enviro.dt$x, Lat = enviro.dt$y, sst = scale(enviro.dt$sst))
-	enviro = list(formula = "~bs(sst,df=8)", covariate_data = enviro.df)
+	enviro = list(formula = "~bs(sst)", covariate_data = enviro.df)
 
 # Estimate indices
 	# Random
