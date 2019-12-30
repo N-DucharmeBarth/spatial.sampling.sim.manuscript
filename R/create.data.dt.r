@@ -34,10 +34,13 @@
 
 # add zeros
 	prop.zero = 0.1
-	zero.cells = as.vector(rmultinom(1,round(prop.zero*nrow(data.dt)),1/log(data.dt$skj.noise)))
+	zero.cells = as.vector(rmultinom(1,round(prop.zero*nrow(data.dt)),1/sqrt(data.dt$skj.noise)))
 
 	zero.cells = ifelse(zero.cells>0,0,1)
 	data.dt$skj.noise.patchy = zero.cells * data.dt$skj.noise
+
+# add column for data.id
+	data.dt$id.data = 1:nrow(data.dt)
 
 # add column for 5x5 cell id
 	data.dt$id.5x5 = as.numeric(as.factor(paste0(floor(data.dt$lon/5)*5,"_",floor(data.dt$lat/5)*5)))
@@ -64,7 +67,7 @@
 			# raster::plot(data.rasters[[1]],col=c("gray50",viridis::viridis(500)))
 
 # test estimability
-	# Data_Geostat = data.dt[ts %in% 1:39]
+	# Data_Geostat = data.dt[ts %in% 1:40]
 	# 		Data_Geostat = Data_Geostat[,.(skj.noise.patchy,ts,lon,lat)]
 	# 		colnames(Data_Geostat) = c("Response_variable","Year","Lon","Lat")
 	# 		Data_Geostat$Spp = as.factor("skj")
@@ -93,7 +96,7 @@
 	# 	  			sp::proj4string(extrap.points) = sp::proj4string(strata.sp)
 	# 	  			extrap.points$valid = sp::over(extrap.points,strata.sp[i])
 	# 	  			true.dt = data.table::as.data.table(extrap.points@data)
-	# 				true.index = true.dt[ts %in% 1:39 & !is.na(valid),.(Index=mean(skj.noise.patchy)),by=ts]
+	# 				true.index = true.dt[ts %in% 1:40 & !is.na(valid),.(Index=mean(skj.noise.patchy)),by=ts]
 
 	# 				plot(scale(true.index$Index),pch=16,ylim=c(-2,2))
 	# 				lines(scale(vast_output$Report$Index_cyl[1,,i+1]),col="hotpink",lwd=2,lty=2)
