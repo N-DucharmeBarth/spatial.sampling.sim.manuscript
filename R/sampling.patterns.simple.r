@@ -384,8 +384,8 @@ contract.samp = function(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.1
 for(i in 1:100)
 {
 		save.id = i
-		if(i<10){save.id = paste0("00",i)}
-		if(i<100){save.id = paste0("0",i)}
+		if(i<100){save.id = paste0("0",save.id)}
+		if(i<10){save.id = paste0("0",save.id)}
 
 	# RandomZero
 		samp.dt = rand.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0, random.seed = i)
