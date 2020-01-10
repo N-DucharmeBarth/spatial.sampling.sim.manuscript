@@ -49,7 +49,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/Random.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Random.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Random.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
@@ -76,7 +76,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/RandomZero.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/RandomZero.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/RandomZero.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
@@ -103,7 +103,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/Preferential.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Preferential.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Preferential.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
@@ -130,7 +130,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/Fixed.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Fixed.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Fixed.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
@@ -157,7 +157,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/Rotating.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Rotating.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Rotating.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
@@ -184,7 +184,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/Expansion.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Expansion.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Expansion.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
@@ -211,7 +211,7 @@
 			# estimate index
 				SaveDir = "VAST/Simple/Contraction.Enviro/"
 				if(!dir.exists(SaveDir)){dir.create(SaveDir, recursive = TRUE)}
-				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Contraction.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=100,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+				vast_output = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/Simple/Contraction.Enviro/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
 			# save
 				save(vast_output,file=paste0(SaveDir,save.id,".vast_output.RData"))
 			# clean-up
