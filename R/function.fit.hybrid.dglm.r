@@ -1,6 +1,6 @@
 #' Fit a hybrid delta-lognormal GLM with spatiotemporal interaction terms. If there are missing spatial temporal strata these will be imputed using a simple delta GLM with no interactions
 #' @param data Data.frame expecting the following columns: Response_variable,Year,Lon,Lat
-#' @param agg.cell cell size in degrees for the spatial effect
+#' @param n_x number of spatial strata to partition observations across for spatial effect
 #' @param formula.stem Base formula to use for both the binomial and lognormal components of the model
 #' @param data.weighting TRUE or FALSE, if TRUE then reweight observations so that all spatiotemporal strata are equal
 #' @param n.yr.rng Number of total timesteps from first year through last year in data
@@ -16,7 +16,7 @@
 #' @export
 #' 
 
-	fit.hybrid.dglm = function(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
+	fit.hybrid.dglm = function(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123, strata.sp, target.strata)
 	{
 		# add recursive call if strata.sp is provided
 			if(missing(strata.sp))
@@ -26,17 +26,44 @@
 				# add 0 to Year if less than 100 (need to do this to properly match up the indices at the end)
 					data$Year = sapply(data$Year,function(x)if(as.numeric(x)<100){paste0("0",x)}else{x})
 
-				# add column for agg.cell
-					if(agg.cell > 1)
-					{
-						cell.latlon.agg = apply(data[,c("Lon","Lat")],2,function(x)floor(x/agg.cell)*agg.cell)
-						data$agg.cell = as.numeric(as.factor(apply(cell.latlon.agg,1,paste0,collapse=".")))
-						rm(list=c("cell.latlon.agg"))
-					} else {
-						cell.latlon.agg = apply(data[,c("Lon","Lat")],2,function(x)floor(x))
-						data$agg.cell = as.numeric(as.factor(apply(cell.latlon.agg,1,paste0,collapse=".")))
-						rm(list=c("cell.latlon.agg"))
-					}
+
+				# partition observations to each knot (this is now the new spatial strata)
+				# Set spatial extent and extrapolation grid
+					grid_size_km = (110 * 1)^2 # the distance between grid cells for the 2D AR1 grid if Method == "Grid"
+					grid_bounds = c(floor(min(data[,c("Lat")])/5)*5,ceiling(max(data[,c("Lat")])/5)*5,floor(min(data[,c("Lon")])/5)*5,ceiling(max(data[,c("Lon")])/5)*5)	
+					input.grid = as.matrix(expand.grid(Lat = seq(from=grid_bounds[1],to=grid_bounds[2],by=1),Lon = seq(from=grid_bounds[3],to=grid_bounds[4],by=1), Area_km2 = grid_size_km))
+					crs.en = paste0("+proj=tpeqd +lat_1=",mean(grid_bounds[1:2])," +lon_1=",round(grid_bounds[3] + (1/3)*abs(diff(grid_bounds[3:4])))," +lat_2=",mean(grid_bounds[1:2])," +lon_2=",round(grid_bounds[3] + (2/3)*abs(diff(grid_bounds[3:4])))," +datum=WGS84 +ellps=WGS84 +units=km +no_defs")
+					crs.ll = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+
+
+					Extrapolation_List = ndd.vast.utils::make_extrapolation_info.ndd(Region = "User", strata.limits = data.frame('STRATA'="All_areas"),input.grid=input.grid,crs.en=crs.en,crs.ll=crs.ll)
+					# modify extrapolation list to only include points within the region and not on land 
+						extrap.df = as.data.frame(Extrapolation_List$Data_Extrap)
+						sp::coordinates(extrap.df) = ~E_km + N_km
+						sp::proj4string(extrap.df) = crs.en
+						library(ndd.vast.utils)
+						data("pacific.coast")
+						pacific.coast = sp::spTransform(pacific.coast,crs.en)
+						over.index.land = which(is.na(sp::over(extrap.df,pacific.coast)))
+
+						if(missing(target.strata))
+						{
+							over.index = over.index.land
+						} else {
+							strata.trans = sp::spTransform(target.strata,crs.en)
+							over.index.region = which(!is.na(sp::over(extrap.df,strata.trans)))
+							over.index = intersect(over.index.land,over.index.region)
+						}
+
+						Extrapolation_List$a_el = data.frame(All_areas = Extrapolation_List$a_el[over.index,])
+						Extrapolation_List$Data_Extrap = Extrapolation_List$Data_Extrap[over.index,]
+						Extrapolation_List$Area_km2_x = Extrapolation_List$Area_km2_x[over.index]
+
+						Spatial_List = ndd.vast.utils::make_spatial_info.ndd(n_x=10, Lon_i=data[,'Lon'], Lat_i=data[,'Lat'], Extrapolation_List = Extrapolation_List, knot_method="grid", Method="Mesh",
+												  grid_size_km=grid_size_km, grid_size_LL=1, fine_scale=FALSE, Network_sz_LL=NULL,
+												  iter.max=1000, randomseed=seed, nstart=100, DirPath="/dummy", Save_Results=FALSE,crs.en = crs.en,crs.ll = crs.ll)
+
+						data$knot = Spatial_List$knot_i
 
 				# add bin column
 					data$bin = ifelse(data$Response_variable>0,1,0)
@@ -45,7 +72,7 @@
 				{
 					# calculate a weight vector for each observation given their spatiotemporal strata
 					# need the number of observations per unique strata
-						data$ts.cell = apply(data[,c("Year","agg.cell")],1,paste0,collapse=".")
+						data$ts.cell = apply(data[,c("Year","knot")],1,paste0,collapse=".")
 						strata.obs = as.data.frame(cbind(names(table(data$ts.cell)),table(data$ts.cell)))
 						colnames(strata.obs) = c("strata","N")
 						strata.obs$N = as.numeric(as.character(strata.obs$N))
@@ -166,7 +193,7 @@
 				for(i in 1:length(strata.sp))
 				{
 					strata.data = data[which(!is.na(sp::over(strata.points,strata.sp[i]))),]
-					output.list[[i]] = fit.dglm(strata.data, agg.cell = agg.cell, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng)
+					output.list[[i]] = fit.dglm(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,target.strata=strata.sp[i])
 					rm(list=c("strata.data"))
 				}
 				return(output.list)
@@ -174,30 +201,32 @@
 	}
 
 
-# # test
-# 	setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscript/")	
+# test
+	setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscript/")	
 
-# # load packages
-# 	library(ndd.vast.utils)
-# 	data(skj.alt2019.shp)
-# 	i = 1
-# 		save.id = i
-# 				if(i<100){save.id = paste0("0",save.id)}
-# 				if(i<10){save.id = paste0("0",save.id)}
-# 			# bring in data
-# 				load(paste0("SimData/Simple/Fixed/samp.dt.",save.id,".RData"))
-# 			# format data
-# 				data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
-# 				colnames(data) = c("Response_variable","Year","Lon","Lat")
-# ### Function defaults for testing 
-# 	data = data
-# 	agg.cell = 5
-# 	formula.stem = " ~ Year + agg.cell"
-# 	data.weighting = TRUE
-# 	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
-# 	strata.sp = skj.alt2019.shp
+# load packages
+	library(ndd.vast.utils)
+	data(skj.alt2019.shp)
+	i = 1
+		save.id = i
+				if(i<100){save.id = paste0("0",save.id)}
+				if(i<10){save.id = paste0("0",save.id)}
+			# bring in data
+				load(paste0("SimData/Simple/RandomZero/samp.dt.",save.id,".RData"))
+			# format data
+				data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
+				colnames(data) = c("Response_variable","Year","Lon","Lat")
+### Function defaults for testing 
+	data = data
+	n_x = 10
+	formula.stem = " ~ Year * knot"
+	data.weighting = TRUE
+	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
+	seed = 123
+	strata.sp = skj.alt2019.shp
+	target.strata = skj.alt2019.shp[1]
 
-# 	test.out = fit.dglm(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
+# 	test.out = fit.hybrid.dglm(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
 
 # 	load("Background_Data/data.dt.RData")
 # 	data.dt = data.table::as.data.table(data.dt)
