@@ -68,6 +68,89 @@
 				# add bin column
 					data$bin = ifelse(data$Response_variable>0,1,0)
 
+				# identify if there are any missing strata & if so, fill them in with results from a simple glm
+					t.strat = 1:n.yr.rng
+					t.strat = sapply(t.strat,function(x)if(as.numeric(x)<10){paste0("0",x)}else{x})
+					t.strat = sapply(t.strat,function(x)if(as.numeric(x)<100){paste0("0",x)}else{x})
+
+					s.strat = 1:n_x
+
+					data$strat.id = paste0(data$Year,".",data$knot)
+					u.strat = expand.grid(Year=t.strat,knot=s.strat)
+					u.strat$strat.id = paste0(u.strat$Year,".",u.strat$knot)
+
+					if(length(unique(data$strat.id))<nrow(u.strat))
+					{
+						# use simple glms to predict across all strata
+							data.tmp = data
+							data.tmp$knot = as.factor(as.character(data.tmp$knot))
+							# fit glms
+								bin.tmp = speedglm::speedglm(bin ~ Year + knot, family = binomial(link = "logit"), data = data.tmp, se = FALSE)
+								pos.tmp = speedglm::speedglm(log(Response_variable) ~ Year + knot, family = gaussian(link = "identity"), data = data.tmp[which(data.tmp$bin==1),], se = FALSE)
+							# predict
+								u.strat$bin.pred = NA
+								u.strat$pos.pred = NA
+								for(i in 1:nrow(u.strat))
+								{
+									if(u.strat$Year[i] == "001")
+									{
+										bin.year.offset = 0
+										pos.year.offset = 0
+									} else {
+										bin.year.offset = bin.tmp$coefficients[grep(paste0("Year",u.strat$Year[i]),names(bin.tmp$coefficients))]
+										pos.year.offset = pos.tmp$coefficients[grep(paste0("Year",u.strat$Year[i]),names(pos.tmp$coefficients))]
+									}
+									if(u.strat$knot[i] == "1")
+									{
+										bin.knot.offset = 0
+										pos.knot.offset = 0
+									} else {
+										bin.knot.offset = bin.tmp$coefficients[grep(paste0("knot",u.strat$knot[i]),names(bin.tmp$coefficients))]
+										pos.knot.offset = pos.tmp$coefficients[grep(paste0("knot",u.strat$knot[i]),names(pos.tmp$coefficients))]
+									}
+
+									tmp.bin.pred = unname(boot::inv.logit(bin.tmp$coefficients[1] + bin.year.offset + bin.knot.offset))
+									if(length(tmp.bin.pred)==0){tmp.bin.pred=NA}
+									tmp.pos.pred = exp(pos.tmp$coefficients[1] + pos.year.offset + pos.knot.offset)
+									if(length(tmp.pos.pred)==0){tmp.pos.pred=NA}
+
+
+									u.strat$bin.pred[i] = tmp.bin.pred
+									u.strat$pos.pred[i] = tmp.pos.pred
+									# clean-up
+										rm(list=c("bin.year.offset","pos.year.offset","bin.knot.offset","pos.knot.offset","tmp.bin.pred","tmp.pos.pred"))
+								}
+
+							u.strat$pred = u.strat$bin.pred * u.strat$pos.pred
+
+							# create Walter's folly fantasy fill matrix
+								walters.m = subset(u.strat,knot==1)$pred
+								for(i in 2:max(u.strat$knot))
+								{
+									walters.m = cbind(walters.m,subset(u.strat,knot==i)$pred)
+								}
+								rownames(walters.m) = t.strat
+								colnames(walters.m) = s.strat
+
+							# impute across time within a knot for any strata that were unable to be predicted by the basic dglm
+								walters.m = apply(walters.m,2,imputeTS::na_ma,k=3)
+
+							# identify which strata are missing 
+								missing.strata = u.strat[-which(u.strat$strat.id %in% unique(data$strat.id)),]
+
+							# look-up values in walters.m & append missing to data
+								for(i in 1:nrow(missing.strata))
+								{
+									data = rbind(data,data.frame(Response_variable = rep(walters.m[which(rownames(walters.m)==missing.strata$Year[i]),which(colnames(walters.m)==missing.strata$knot[i])],1),
+										Year = rep(missing.strata$Year[i],1),
+										Lon = rep(NA,1),
+										Lat = rep(NA,1),
+										knot = rep(missing.strata$knot[i],1),
+										bin = rep(ifelse(walters.m[which(rownames(walters.m)==missing.strata$Year[i]),which(colnames(walters.m)==missing.strata$knot[i])]>0,1,0),1),
+										strat.id = rep(missing.strata$strat.id[i],1)))
+								}
+					}
+
 				if(data.weighting)
 				{
 					# calculate a weight vector for each observation given their spatiotemporal strata
@@ -144,6 +227,8 @@
 					dt$Year = as.numeric(as.character(dt$Year))
 					index.df$nominal[match(dt$Year,index.df$Year)] = dt$Nominal
 
+				@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				@@@@@@ Take spatially weighted average across strata to create index, need area associated with each knot
 				# create index
 				# since we are rescaling the indices there is no need to bias correct
 				# also can just use year effect since there are no interactions and we are using the rescaled indices
@@ -212,7 +297,7 @@
 				if(i<100){save.id = paste0("0",save.id)}
 				if(i<10){save.id = paste0("0",save.id)}
 			# bring in data
-				load(paste0("SimData/Simple/RandomZero/samp.dt.",save.id,".RData"))
+				load(paste0("SimData/Simple/Fixed/samp.dt.",save.id,".RData"))
 			# format data
 				data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
 				colnames(data) = c("Response_variable","Year","Lon","Lat")
@@ -224,7 +309,7 @@
 	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
 	seed = 123
 	strata.sp = skj.alt2019.shp
-	target.strata = skj.alt2019.shp[1]
+
 
 # 	test.out = fit.hybrid.dglm(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
 
