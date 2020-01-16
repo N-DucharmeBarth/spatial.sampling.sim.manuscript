@@ -4,6 +4,8 @@
 #' @param formula.stem Base formula to use for both the binomial and lognormal components of the model
 #' @param data.weighting TRUE or FALSE, if TRUE then reweight observations so that all spatiotemporal strata are equal
 #' @param n.yr.rng Number of total timesteps from first year through last year in data
+#' @param seed Set seed for random number generator
+#' @param scale TRUE or FALSE, if true then return index as having mean of 1 and SE as the CV
 #' @param strata.sp [Optional] If present, a shapefile containing the strata boundaries to calculate the indicies for
 #' @return returns a data.frame or list of data.frames (one for each spatial strata) with 8 columns: "Year","nominal","bin.index","bin.se","pos.index","pos.se","index","se"
 #' @importFrom data.table as.data.table
@@ -16,7 +18,7 @@
 #' @export
 #' 
 
-	fit.hybrid.dglm = function(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123, strata.sp, target.strata)
+	fit.hybrid.dglm = function(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123, scale=TRUE, strata.sp, target.strata)
 	{
 		# add recursive call if strata.sp is provided
 			if(missing(strata.sp))
@@ -214,8 +216,8 @@
 					pos.formula =  as.formula(paste0("log(Response_variable)",formula.stem))
 
 				# fit both the positive and binomial components of the model
-					bin.model = speedglm::speedglm(bin.formula, family = binomial(link = "logit"), weights = bin.data$weight, data = bin.data, se = TRUE)
-					pos.model = speedglm::speedglm(pos.formula, family = gaussian(link = "identity"), weights = pos.data$weight, data = pos.data, se = TRUE)
+					bin.model = glm(bin.formula, family = binomial(link = "logit"), weights = bin.data$weight, data = bin.data)
+					pos.model = glm(pos.formula, family = gaussian(link = "identity"), weights = pos.data$weight, data = pos.data)
 
 				# create index storage structure
 					index.df = as.data.frame(matrix(NA,nrow=n.yr.rng,ncol=8))
@@ -226,35 +228,37 @@
 					dt = dt[,.(Nominal=mean(Response_variable,na.rm=TRUE)),by=Year]
 					dt$Year = as.numeric(as.character(dt$Year))
 					index.df$nominal[match(dt$Year,index.df$Year)] = dt$Nominal
-
-				@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-				@@@@@@ Take spatially weighted average across strata to create index, need area associated with each knot
-				# create index
-				# since we are rescaling the indices there is no need to bias correct
-				# also can just use year effect since there are no interactions and we are using the rescaled indices
-				# use 1st order taylor approximation for the variance back transformation
-				# positive component 
-					int.pos = pos.model$coefficients[grep("(Intercept)",names(pos.model$coefficients))]
-					pred.pos = c(int.pos,int.pos+pos.model$coefficients[grep("Year",names(pos.model$coefficients))])
-					pos.coef.index = match(names(pred.pos),names(pos.model$coefficients))
-
-					names(pred.pos)[1] = paste0("Year",sort(unique(pos.data$Year))[1])
-					index.df$pos.index[sapply(names(pred.pos),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = exp(pred.pos)
-					index.df$pos.se[sapply(names(pred.pos),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = sqrt(exp(pred.pos)*summary(pos.model)$coefficients[pos.coef.index,2]^2)
-
-				# binomial component
-					int.bin = bin.model$coefficients[grep("(Intercept)",names(bin.model$coefficients))]
-					pred.bin = c(int.bin,int.bin+bin.model$coefficients[grep("Year",names(bin.model$coefficients))])
-					bin.coef.index = match(names(pred.bin),names(bin.model$coefficients))
-
-					names(pred.bin)[1] = paste0("Year",sort(unique(bin.data$Year))[1])
-					index.df$bin.index[sapply(names(pred.bin),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = boot::inv.logit(pred.bin)
-					index.df$bin.se[sapply(names(pred.bin),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = sqrt(((exp(pred.bin))/((1+exp(pred.bin))^2))^2*(summary(bin.model)$coefficients[bin.coef.index,2])^2)
-
-				# combine
-					index.df$index = index.df$pos.index * index.df$bin.index
+					
+				# make predictions across all strata
+					new.data = u.strat[,c("Year","knot")]
+					new.data$knot = as.factor(as.character(new.data$knot))
+					bin.pred = predict(bin.model, newdata = new.data,type = c("response"),se.fit=TRUE)
+					pos.pred = predict(pos.model, newdata = new.data,type = c("response"),se.fit=TRUE)
+					pos.pred$fit = exp(pos.pred$fit)
+					pos.pred$se.fit = sqrt(pos.pred$fit*pos.pred$se.fit^2)
+					new.data$pred = bin.pred$fit * pos.pred$fit
 					# sd(XY) = (var(X)var(Y)+var(X)E(Y)^2 + var(Y)E(X)^2)^0.5
-					index.df$se = ((index.df$bin.se)^2*(index.df$pos.se)^2+(index.df$bin.se)^2*(index.df$pos.index)^2+(index.df$pos.se)^2*(index.df$bin.index)^2)^0.5
+					new.data$se = ((bin.pred$se.fit)^2*(pos.pred$se.fit)^2+(bin.pred$se.fit)^2*(pos.pred$fit)^2+(pos.pred$se.fit)^2*(bin.pred$fit)^2)^0.5
+					new.data$cv = new.data$se/new.data$pred
+
+				# get area of each knot & take spatial average to create index
+					knot.area = as.vector(Spatial_List$a_xl)
+					knot.area = knot.area/sum(knot.area)
+					new.data$area = knot.area[as.numeric(as.character(new.data$knot))]
+					new.data$pred_x_area = new.data$area * new.data$pred
+					new.data$var_x_area = new.data$area^2 * new.data$se^2
+				 	walters.dt = data.table::as.data.table(new.data)
+				 	walters.dt = walters.dt[,.(Index = sum(pred_x_area),Var = sum(var_x_area)),by=Year][order(Year)]
+				 	walters.dt$SE = sqrt(walters.dt$Var) 
+				 	walters.dt$CV = walters.dt$SE/walters.dt$Index
+
+					index.df = as.data.frame(walters.dt[,.(Year,Index,SE)])
+					if(scale)
+					{
+						mean.index = mean(index.df$Index)
+						index.df$Index = index.df$Index/mean.index
+						index.df$SE = index.df$SE/mean.index 
+					}
 
 				# return
 					return(index.df)
@@ -278,7 +282,7 @@
 				for(i in 1:length(strata.sp))
 				{
 					strata.data = data[which(!is.na(sp::over(strata.points,strata.sp[i]))),]
-					output.list[[i]] = fit.dglm(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,target.strata=strata.sp[i])
+					output.list[[i]] = fit.dglm(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,scale=scale,target.strata=strata.sp[i])
 					rm(list=c("strata.data"))
 				}
 				return(output.list)
@@ -308,10 +312,11 @@
 	data.weighting = TRUE
 	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
 	seed = 123
+	scale = TRUE
 	strata.sp = skj.alt2019.shp
 
 
-# 	test.out = fit.hybrid.dglm(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
+# 	test.out = fit.hybrid.dglm(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, strata.sp)
 
 # 	load("Background_Data/data.dt.RData")
 # 	data.dt = data.table::as.data.table(data.dt)
