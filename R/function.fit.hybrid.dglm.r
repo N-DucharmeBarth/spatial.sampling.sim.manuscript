@@ -219,16 +219,6 @@
 					bin.model = glm(bin.formula, family = binomial(link = "logit"), weights = bin.data$weight, data = bin.data)
 					pos.model = glm(pos.formula, family = gaussian(link = "identity"), weights = pos.data$weight, data = pos.data)
 
-				# create index storage structure
-					index.df = as.data.frame(matrix(NA,nrow=n.yr.rng,ncol=8))
-					colnames(index.df) = c("Year","nominal","bin.index","bin.se","pos.index","pos.se","index","se")
-					index.df$Year = 1:n.yr.rng
-				# calculate nominal
-					dt = data.table::as.data.table(data)
-					dt = dt[,.(Nominal=mean(Response_variable,na.rm=TRUE)),by=Year]
-					dt$Year = as.numeric(as.character(dt$Year))
-					index.df$nominal[match(dt$Year,index.df$Year)] = dt$Nominal
-					
 				# make predictions across all strata
 					new.data = u.strat[,c("Year","knot")]
 					new.data$knot = as.factor(as.character(new.data$knot))
@@ -253,7 +243,9 @@
 				 	walters.dt$CV = walters.dt$SE/walters.dt$Index
 
 					index.df = as.data.frame(walters.dt[,.(Year,Index,SE)])
-					if(scale)
+					index.df$Year = 1:n.yr.rng
+					
+				if(scale)
 					{
 						mean.index = mean(index.df$Index)
 						index.df$Index = index.df$Index/mean.index
@@ -282,7 +274,7 @@
 				for(i in 1:length(strata.sp))
 				{
 					strata.data = data[which(!is.na(sp::over(strata.points,strata.sp[i]))),]
-					output.list[[i]] = fit.dglm(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,scale=scale,target.strata=strata.sp[i])
+					output.list[[i]] = fit.hybrid.dglm(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,scale=scale,target.strata=strata.sp[i])
 					rm(list=c("strata.data"))
 				}
 				return(output.list)
@@ -290,30 +282,30 @@
 	}
 
 
-# test
-	setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscript/")	
+# # test
+# 	setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscript/")	
 
-# load packages
-	library(ndd.vast.utils)
-	data(skj.alt2019.shp)
-	i = 1
-		save.id = i
-				if(i<100){save.id = paste0("0",save.id)}
-				if(i<10){save.id = paste0("0",save.id)}
-			# bring in data
-				load(paste0("SimData/Simple/Fixed/samp.dt.",save.id,".RData"))
-			# format data
-				data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
-				colnames(data) = c("Response_variable","Year","Lon","Lat")
-### Function defaults for testing 
-	data = data
-	n_x = 10
-	formula.stem = " ~ Year * knot"
-	data.weighting = TRUE
-	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
-	seed = 123
-	scale = TRUE
-	strata.sp = skj.alt2019.shp
+# # load packages
+# 	library(ndd.vast.utils)
+# 	data(skj.alt2019.shp)
+# 	i = 1
+# 		save.id = i
+# 				if(i<100){save.id = paste0("0",save.id)}
+# 				if(i<10){save.id = paste0("0",save.id)}
+# 			# bring in data
+# 				load(paste0("SimData/Simple/Fixed/samp.dt.",save.id,".RData"))
+# 			# format data
+# 				data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
+# 				colnames(data) = c("Response_variable","Year","Lon","Lat")
+# ### Function defaults for testing 
+# 	data = data
+# 	n_x = 10
+# 	formula.stem = " ~ Year * knot"
+# 	data.weighting = TRUE
+# 	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
+# 	seed = 123
+# 	scale = TRUE
+# 	strata.sp = skj.alt2019.shp
 
 
 # 	test.out = fit.hybrid.dglm(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, strata.sp)
@@ -335,9 +327,7 @@
 # 		true.dt = data.table::as.data.table(extrap.points@data)
 # 		true.index = true.dt[ts %in% 1:40 & !is.na(valid),.(Index=mean(skj.noise.patchy)),by=ts]
 
-# 		plot(1,1,type="n",xlim=c(0,n.yr.rng+1),ylim=c(-3,3))
-# 		points(scale(true.index$Index),pch=16)
-# 		lines(scale(test.out[[i]]$nominal),lty=2)
-# 		lines(scale(test.out[[i]]$index),col="red")
+# 		plot(true.index$Index/mean(true.index$Index),pch=16,ylim=c(0.75,1.25))
+# 		lines(test.out[[i]]$Index,col="red")
 # 	}
 

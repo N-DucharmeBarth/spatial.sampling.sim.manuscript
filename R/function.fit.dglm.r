@@ -4,6 +4,7 @@
 #' @param formula.stem Base formula to use for both the binomial and lognormal components of the model
 #' @param data.weighting TRUE or FALSE, if TRUE then reweight observations so that all spatiotemporal strata are equal
 #' @param n.yr.rng Number of total timesteps from first year through last year in data
+#' @param scale TRUE or FALSE, if true then return index as having mean of 1 and SE as the CV
 #' @param strata.sp [Optional] If present, a shapefile containing the strata boundaries to calculate the indicies for
 #' @return returns a data.frame or list of data.frames (one for each spatial strata) with 8 columns: "Year","nominal","bin.index","bin.se","pos.index","pos.se","index","se"
 #' @importFrom data.table as.data.table
@@ -16,7 +17,7 @@
 #' @export
 #' 
 
-	fit.dglm = function(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
+	fit.dglm = function(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, strata.sp)
 	{
 		# add recursive call if strata.sp is provided
 			if(missing(strata.sp))
@@ -144,6 +145,15 @@
 					# sd(XY) = (var(X)var(Y)+var(X)E(Y)^2 + var(Y)E(X)^2)^0.5
 					index.df$se = ((index.df$bin.se)^2*(index.df$pos.se)^2+(index.df$bin.se)^2*(index.df$pos.index)^2+(index.df$pos.se)^2*(index.df$bin.index)^2)^0.5
 
+					index.df = index.df[,c(Year,index,se)])
+					colnames(index.df) = c("Year","Index","SE")
+					
+				if(scale)
+					{
+						mean.index = mean(index.df$Index)
+						index.df$Index = index.df$Index/mean.index
+						index.df$SE = index.df$SE/mean.index 
+					}
 				# return
 					return(index.df)
 			} else {
@@ -166,7 +176,7 @@
 				for(i in 1:length(strata.sp))
 				{
 					strata.data = data[which(!is.na(sp::over(strata.points,strata.sp[i]))),]
-					output.list[[i]] = fit.dglm(strata.data, agg.cell = agg.cell, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng)
+					output.list[[i]] = fit.dglm(strata.data, agg.cell = agg.cell, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,scale=scale)
 					rm(list=c("strata.data"))
 				}
 				return(output.list)
