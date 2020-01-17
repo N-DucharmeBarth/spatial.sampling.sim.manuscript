@@ -18,7 +18,7 @@
 #' @export
 #' 
 
-	fit.hybrid.dglm = function(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123, scale=TRUE, strata.sp, target.strata)
+	fit.hybrid.dglm.simple = function(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123, scale=TRUE, strata.sp, target.strata)
 	{
 		# add recursive call if strata.sp is provided
 			if(missing(strata.sp))
@@ -274,7 +274,7 @@
 				for(i in 1:length(strata.sp))
 				{
 					strata.data = data[which(!is.na(sp::over(strata.points,strata.sp[i]))),]
-					output.list[[i]] = fit.hybrid.dglm(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,scale=scale,target.strata=strata.sp[i])
+					output.list[[i]] = fit.hybrid.dglm.simple(strata.data, n_x = 10, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,seed=seed,scale=scale,target.strata=strata.sp[i])
 					rm(list=c("strata.data"))
 				}
 				return(output.list)
@@ -308,7 +308,7 @@
 # 	strata.sp = skj.alt2019.shp
 
 
-# 	test.out = fit.hybrid.dglm(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, strata.sp)
+# 	test.out = fit.hybrid.dglm.simple(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, strata.sp)
 
 # 	load("Background_Data/data.dt.RData")
 # 	data.dt = data.table::as.data.table(data.dt)

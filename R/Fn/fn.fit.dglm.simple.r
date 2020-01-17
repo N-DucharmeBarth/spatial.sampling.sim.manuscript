@@ -17,7 +17,7 @@
 #' @export
 #' 
 
-	fit.dglm = function(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, strata.sp)
+	fit.dglm.simple = function(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = TRUE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, strata.sp)
 	{
 		# add recursive call if strata.sp is provided
 			if(missing(strata.sp))
@@ -176,7 +176,7 @@
 				for(i in 1:length(strata.sp))
 				{
 					strata.data = data[which(!is.na(sp::over(strata.points,strata.sp[i]))),]
-					output.list[[i]] = fit.dglm(strata.data, agg.cell = agg.cell, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,scale=scale)
+					output.list[[i]] = fit.dglm.simple(strata.data, agg.cell = agg.cell, formula.stem = formula.stem, data.weighting = data.weighting, n.yr.rng=n.yr.rng,scale=scale)
 					rm(list=c("strata.data"))
 				}
 				return(output.list)
@@ -207,7 +207,7 @@
 # 	n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2])
 # 	strata.sp = skj.alt2019.shp
 
-# 	test.out = fit.dglm(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
+# 	test.out = fit.dglm.simple(data, agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), strata.sp)
 
 # 	load("Background_Data/data.dt.RData")
 # 	data.dt = data.table::as.data.table(data.dt)
