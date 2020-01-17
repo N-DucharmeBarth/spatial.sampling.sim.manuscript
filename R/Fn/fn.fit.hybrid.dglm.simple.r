@@ -7,7 +7,7 @@
 #' @param seed Set seed for random number generator
 #' @param scale TRUE or FALSE, if true then return index as having mean of 1 and SE as the CV
 #' @param strata.sp [Optional] If present, a shapefile containing the strata boundaries to calculate the indicies for
-#' @return returns a data.frame or list of data.frames (one for each spatial strata) with 8 columns: "Year","nominal","bin.index","bin.se","pos.index","pos.se","index","se"
+#' @return returns a data.frame or list of data.frames (one for each spatial strata) with 3 columns: "Year","Index","SE"
 #' @importFrom data.table as.data.table
 #' @importFrom speedglm speedglm
 #' @importFrom boot inv.logit
@@ -15,6 +15,10 @@
 #' @importFrom sp coordinates
 #' @importFrom sp proj4string
 #' @importFrom sp over
+#' @importFrom sp spTransform
+#' @importFrom imputeTS na_ma
+#' @importFrom ndd.vast.utils make_extrapolation_info.ndd
+#' @importFrom ndd.vast.utils make_spatial_info.ndd 
 #' @export
 #' 
 
