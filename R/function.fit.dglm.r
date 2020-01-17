@@ -145,12 +145,12 @@
 					# sd(XY) = (var(X)var(Y)+var(X)E(Y)^2 + var(Y)E(X)^2)^0.5
 					index.df$se = ((index.df$bin.se)^2*(index.df$pos.se)^2+(index.df$bin.se)^2*(index.df$pos.index)^2+(index.df$pos.se)^2*(index.df$bin.index)^2)^0.5
 
-					index.df = index.df[,c(Year,index,se)]
+					index.df = index.df[,c("Year","index","se")]
 					colnames(index.df) = c("Year","Index","SE")
 					
 				if(scale)
 					{
-						mean.index = mean(index.df$Index)
+						mean.index = mean(index.df$Index,na.rm=TRUE)
 						index.df$Index = index.df$Index/mean.index
 						index.df$SE = index.df$SE/mean.index 
 					}
