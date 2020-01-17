@@ -13,7 +13,6 @@
 
 
 
-# Fixed
 fit.simple.sim = function(s)
 # s %in% "Fixed", "Rotating", "Expansion", "Contraction", "Preferential", "Random", & "RandomZero"
 {
@@ -51,7 +50,7 @@ fit.simple.sim = function(s)
 			data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
 			colnames(data) = c("Response_variable","Year","Lon","Lat")
 		# format Data_Geostat
-			Data_Geostat = samp.dt[,.(response,ts,lon,lat)]
+			Data_Geostat = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
 			colnames(Data_Geostat) = c("Response_variable","Year","Lon","Lat")
 			Data_Geostat$Spp = as.factor("skj")
 			Data_Geostat$AreaSwept_km2 = 110^2
@@ -61,8 +60,8 @@ fit.simple.sim = function(s)
 			idx_dglm = try(fit.dglm.simple(data,  agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
 			idx_hybrid = try(fit.hybrid.dglm.simple(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, skj.alt2019.shp),silent=TRUE)
 			idx_nominal = try(nominal.simple(data,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
-			idx_vast = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
-			idx_vastNoEnviro = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",strata.sp=skj.alt2019.shp),silent=TRUE)
+			idx_vast = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=TRUE,strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+			idx_vastNoEnviro = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=TRUE,strata.sp=skj.alt2019.shp),silent=TRUE)
 
 		# save
 			sd.dglm = paste0("Index/Simple/",effort.scenario,"/dglm/")
