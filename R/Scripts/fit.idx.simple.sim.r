@@ -56,29 +56,30 @@ fit.simple.sim = function(s)
 			Data_Geostat$AreaSwept_km2 = 110^2
 			Data_Geostat$Vessel = "missing"
 			Data_Geostat = as.data.frame(Data_Geostat)
-		# get indices
-			idx_dglm = try(fit.dglm.simple(data,  agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
-			idx_hybrid = try(fit.hybrid.dglm.simple(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, skj.alt2019.shp),silent=TRUE)
-			idx_nominal = try(nominal.simple(data,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
-			idx_vast = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=TRUE,strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
-			idx_vastNoEnviro = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=TRUE,strata.sp=skj.alt2019.shp),silent=TRUE)
-
-		# save
+		# get indices & save
 			sd.dglm = paste0("Index/Simple/",effort.scenario,"/dglm/")
-			sd.hybrid = paste0("Index/Simple/",effort.scenario,"/hybrid/")
-			sd.nominal = paste0("Index/Simple/",effort.scenario,"/nominal/")
-			sd.vast = paste0("Index/Simple/",effort.scenario,"/vast/")
-			sd.vastNoEnviro = paste0("Index/Simple/",effort.scenario,"/vastNoEnviro/")
-
+			idx_dglm = try(fit.dglm.simple(data,  agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
 			if(!dir.exists(sd.dglm)){dir.create(sd.dglm, recursive = TRUE)}
-			if(!dir.exists(sd.hybrid)){dir.create(sd.hybrid, recursive = TRUE)}
-			if(!dir.exists(sd.nominal)){dir.create(sd.nominal, recursive = TRUE)}
-			if(!dir.exists(sd.vast)){dir.create(sd.vast, recursive = TRUE)}
-			if(!dir.exists(sd.vastNoEnviro)){dir.create(sd.vastNoEnviro, recursive = TRUE)}
 			save(idx_dglm,file=paste0(sd.dglm,save.id,".idx_dglm.RData"))
+
+			sd.hybrid = paste0("Index/Simple/",effort.scenario,"/hybrid/")
+			idx_hybrid = try(fit.hybrid.dglm.simple(data, n_x = 10, formula.stem = " ~ Year * knot", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]), seed = 123,scale=TRUE, skj.alt2019.shp),silent=TRUE)
+			if(!dir.exists(sd.hybrid)){dir.create(sd.hybrid, recursive = TRUE)}
 			save(idx_hybrid,file=paste0(sd.hybrid,save.id,".idx_hybrid.RData"))
+
+			sd.nominal = paste0("Index/Simple/",effort.scenario,"/nominal/")
+			idx_nominal = try(nominal.simple(data,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
+			if(!dir.exists(sd.nominal)){dir.create(sd.nominal, recursive = TRUE)}
 			save(idx_nominal,file=paste0(sd.nominal,save.id,".idx_nominal.RData"))
+
+			sd.vast = paste0("Index/Simple/",effort.scenario,"/vast/")
+			idx_vast = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=TRUE,strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+			if(!dir.exists(sd.vast)){dir.create(sd.vast, recursive = TRUE)}
 			save(idx_vast,file=paste0(sd.vast,save.id,".idx_vast.RData"))
+
+			sd.vastNoEnviro = paste0("Index/Simple/",effort.scenario,"/vastNoEnviro/")
+			idx_vastNoEnviro = try(fit.vast(Data_Geostat,RunDir=paste0(getwd(),"/VAST/"),SaveDir=paste0(getwd(),"/VAST/"),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=TRUE,strata.sp=skj.alt2019.shp),silent=TRUE)
+			if(!dir.exists(sd.vastNoEnviro)){dir.create(sd.vastNoEnviro, recursive = TRUE)}
 			save(idx_vastNoEnviro,file=paste0(sd.vastNoEnviro,save.id,".idx_vastNoEnviro.RData"))
 
 		# clean-up
