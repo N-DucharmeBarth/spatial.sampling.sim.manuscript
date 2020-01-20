@@ -12,3 +12,11 @@ settings.txt
 *.nc
 # ignore preliminary folder
 /preliminary_ignore
+# ignore for latex
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.spl
+*.synctex.gz
