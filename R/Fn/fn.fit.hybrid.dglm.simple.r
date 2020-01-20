@@ -229,7 +229,7 @@
 					bin.pred = predict(bin.model, newdata = new.data,type = c("response"),se.fit=TRUE)
 					pos.pred = predict(pos.model, newdata = new.data,type = c("response"),se.fit=TRUE)
 					pos.pred$fit = exp(pos.pred$fit)
-					pos.pred$se.fit = sqrt(pos.pred$fit*pos.pred$se.fit^2)
+					pos.pred$se.fit = sqrt(pos.pred$fit^2*pos.pred$se.fit^2)
 					new.data$pred = bin.pred$fit * pos.pred$fit
 					# sd(XY) = (var(X)var(Y)+var(X)E(Y)^2 + var(Y)E(X)^2)^0.5
 					new.data$se = ((bin.pred$se.fit)^2*(pos.pred$se.fit)^2+(bin.pred$se.fit)^2*(pos.pred$fit)^2+(pos.pred$se.fit)^2*(bin.pred$fit)^2)^0.5

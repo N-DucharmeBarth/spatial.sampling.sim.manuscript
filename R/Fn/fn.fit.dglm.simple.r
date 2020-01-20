@@ -129,7 +129,7 @@
 
 					names(pred.pos)[1] = paste0("Year",sort(unique(pos.data$Year))[1])
 					index.df$pos.index[sapply(names(pred.pos),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = exp(pred.pos)
-					index.df$pos.se[sapply(names(pred.pos),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = sqrt(exp(pred.pos)*summary(pos.model)$coefficients[pos.coef.index,2]^2)
+					index.df$pos.se[sapply(names(pred.pos),function(x)as.numeric(strsplit(x,"Year")[[1]][2]))] = sqrt(exp(pred.pos)^2*summary(pos.model)$coefficients[pos.coef.index,2]^2)
 
 				# binomial component
 					int.bin = bin.model$coefficients[grep("(Intercept)",names(bin.model$coefficients))]
