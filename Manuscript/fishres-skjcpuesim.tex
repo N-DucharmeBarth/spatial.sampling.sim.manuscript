@@ -1,6 +1,6 @@
-\documentclass[review]{elsarticle}
+\documentclass[authoryear,preprint,review,12pt]{elsarticle}
 
-\usepackage{lineno,hyperref}
+\usepackage{lineno,hyperref,amssymb}
 \modulolinenumbers[5]
 
 \journal{Fisheries Research}
@@ -18,71 +18,47 @@
 
 \begin{frontmatter}
 
-\title{Elsevier \LaTeX\ template\tnoteref{mytitlenote}}
-\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+\title{Impacts of fisheries-dependent spatial sampling patterns on index standardization: A simulation study and application to the Japanese pole-and-line fishery}
 
-%% Group authors per affiliation:
-\author{Elsevier\fnref{myfootnote}}
-\address{Radarweg 29, Amsterdam}
-\fntext[myfootnote]{Since 1880.}
 
-%% or include affiliations in footnotes:
-\author[mymainaddress,mysecondaryaddress]{Elsevier Inc}
-\ead[url]{www.elsevier.com}
-
-\author[mysecondaryaddress]{Global Customer Service\corref{mycorrespondingauthor}}
+%% Authors include affiliations in footnotes:
+\author[address.1]{Nicholas Ducharme-Barth\corref{mycorrespondingauthor}}
 \cortext[mycorrespondingauthor]{Corresponding author}
-\ead{support@elsevier.com}
+\ead{nicholasd@spc.int}
+\author[address.2]{Arnaud Gruss}
+\author[address.3]{Junji Kinoshita}
+\author[address.4]{Yoshinori Aoki}
+\author[address.4]{Hidetada Kiyofuji}
+\author[address.1]{Matthew Vincent}
+\author[address.1]{John Hampton}
+\author[address.1]{Graham Pilling}
 
-\address[mymainaddress]{1600 John F Kennedy Boulevard, Philadelphia}
-\address[mysecondaryaddress]{360 Park Avenue South, New York}
+\address[address.1]{Pacific Community, B.P. D5 98848 Noumea, New Caledonia}
+\address[address.2]{School of Aquatic and Fishery Sciences, University of Washington, Box 355020, Seattle, WA, 98105-5020, USA}
+\address[address.3]{National Research Institute of Far Seas Fisheries, Japan Fisheries Research and Education Agency, Yokohama, Kanagawa, Japan}
+\address[address.4]{National Research Institute of Far Seas Fisheries, Japan Fisheries Research and Education Agency, Shimizu-ku, Shizuoka-shi, Shizuoka 424-8633 Japan}
 
 \begin{abstract}
-This template helps you to create a properly formatted \LaTeX\ manuscript.
+Blah blah blah...
 \end{abstract}
 
 \begin{keyword}
-\texttt{elsarticle.cls}\sep \LaTeX\sep Elsevier \sep template
-\MSC[2010] 00-01\sep  99-00
+Spatial sampling\sep spatiotemporal models\sep CPUE \sep fisheries dependent data
 \end{keyword}
 
 \end{frontmatter}
 
 \linenumbers
 
-\section{The Elsevier article class}
+\section{Introduction}\label{Intro}
 
-\paragraph{Installation} If the document class \emph{elsarticle} is not available on your computer, you can download and install the system package \emph{texlive-publishers} (Linux) or install the \LaTeX\ package \emph{elsarticle} using the package manager of your \TeX\ installation, which is typically \TeX\ Live or Mik\TeX.
+\section{Methods}\label{Methods}
 
-\paragraph{Usage} Once the package is properly installed, you can use the document class \emph{elsarticle} to create a manuscript. Please make sure that your manuscript follows the guidelines in the Guide for Authors of the relevant journal. It is not necessary to typeset your manuscript in exactly the same way as an article, unless you are submitting to a camera-ready copy (CRC) journal.
+\section{Results}\label{Results}
 
-\paragraph{Functionality} The Elsevier article class is based on the standard article class and supports almost all of the functionality of that class. In addition, it features commands and options to format the
-\begin{itemize}
-\item document style
-\item baselineskip
-\item front matter
-\item keywords and MSC codes
-\item theorems, definitions and proofs
-\item lables of enumerations
-\item citation style and labeling.
-\end{itemize}
+\section{Discussion}\label{Discussion}
 
-\section{Front matter}
-
-The author names and affiliations could be formatted in two ways:
-\begin{enumerate}[(1)]
-\item Group the authors per affiliation.
-\item Use footnotes to indicate the affiliations.
-\end{enumerate}
-See the front matter of this document for examples. You are recommended to conform your choice to the journal you are submitting to.
-
-\section{Bibliography styles}
-
-There are various bibliography styles available. You can select the style of your choice in the preamble of this document. These styles are Elsevier styles based on standard styles like Harvard and Vancouver. Please use Bib\TeX\ to generate your bibliography and include DOIs whenever available.
-
-Here are two sample references:  \citep{piner_meta-analysis_2011,kopf_age_2011}.
-
-\section*{References}
+\section{Acknowledgments}\label{Ack}
 
 \bibliography{C:/Users/nicholasd/HOME/SPC/SPC_Misc/References/zotero}
 
