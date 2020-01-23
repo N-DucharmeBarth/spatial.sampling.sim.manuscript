@@ -28,8 +28,8 @@
 
 ##########################################################
 # Define external variables for function development
-	# load("Background_Data/data.dt.RData")
-	# data.dt = data.table::as.data.table(data.dt)
+	load("Background_Data/data.dt.RData")
+	data.dt = data.table::as.data.table(data.dt)
 	# ts.sampled = c(1,40)
 	# n.samp = 20000
 	# cv = 0.15
