@@ -12,28 +12,6 @@
 #' @return returns a data.frame  columns: Response_variable,Year,Lon,Lat,Vessel,Gear_Config,Class,Poles
 #' @export
 
-	setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscript/")	
-	load("Background_Data/data.dt.RData")
-
-	i = 1
-	effort.scenario = "Random"
-	save.id = i
-	if(i<100){save.id = paste0("0",save.id)}
-	if(i<10){save.id = paste0("0",save.id)}
-	# bring in data
-		load(paste0("SimData/Simple/",effort.scenario,"/samp.dt.",save.id,".RData"))
-	# add true abundance
-		samp.dt$True_Abundance = data.dt$skj.noise.patchy[samp.dt$id.data]
-	# format data
-		data = as.data.frame(samp.dt[,c("True_Abundance","ts","lon","lat")])
-		colnames(data) = c("True_Abundance","Year","Lon","Lat")
-
-seed = 123
-n.vessel.target = 20
-new.entry.target = 3
-cv = 0.15
-plot=TRUE
-
 add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.target=3,cv = 0.15,plot=FALSE)
 {
 	# Response_Variable = Q*E*A
