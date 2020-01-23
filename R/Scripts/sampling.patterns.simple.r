@@ -388,32 +388,32 @@ for(i in 1:100)
 		if(i<10){save.id = paste0("0",save.id)}
 
 	# RandomZero
-		samp.dt = rand.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/RandomZero/samp.dt.",save.id,".RData"))
+		samp.dt = rand.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/RandomZero/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 	# Random
-		samp.dt = rand.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.15, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/Random/samp.dt.",save.id,".RData"))
+		samp.dt = rand.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0.15, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/Random/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 	# Fixed
-		samp.dt = fixed.seasonal.closure.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.15, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/Fixed/samp.dt.",save.id,".RData"))
+		samp.dt = fixed.seasonal.closure.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0.15, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/Fixed/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 	# Rotating	
-		samp.dt = rotate.seasonal.closure.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.15, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/Rotating/samp.dt.",save.id,".RData"))
+		samp.dt = rotate.seasonal.closure.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0.15, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/Rotating/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 	# Preferential	
-		samp.dt = pref.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.15, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/Preferential/samp.dt.",save.id,".RData"))
+		samp.dt = pref.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0.15, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/Preferential/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 	# Expansion	
-		samp.dt = expand.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.15, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/Expansion/samp.dt.",save.id,".RData"))
+		samp.dt = expand.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0.15, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/Expansion/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 	# Contraction	
-		samp.dt = contract.samp(data.dt, ts.sampled = c(1,40), n.samp = 20000, cv = 0.15, random.seed = i)
-		save(samp.dt,file=paste0("SimData/Simple/Contraction/samp.dt.",save.id,".RData"))
+		samp.dt = contract.samp(data.dt, ts.sampled = c(1,120), n.samp = 60000, cv = 0.15, random.seed = i)
+		save(samp.dt,file=paste0("SimData/Simple120/Contraction/samp.dt.",save.id,".RData"))
 		rm(list=c("samp.dt"))
 }
 

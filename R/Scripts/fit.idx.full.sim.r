@@ -20,7 +20,9 @@ fit.full.sim = function(s)
 		source("R/Fn/fn.fit.dglm.simple.r")
 		source("R/Fn/fn.fit.hybrid.dglm.simple.r")
 		source("R/Fn/fn.nominal.simple.r")
+		source("R/Fn/fn.add.catchability.r")
 		load("SimData/simple.true.index.RData")
+		load("Background_Data/data.dt.RData")
 
 	# load packages
 		library(ndd.vast.utils)
@@ -44,16 +46,25 @@ fit.full.sim = function(s)
 		if(i<10){save.id = paste0("0",save.id)}
 		# bring in data
 			load(paste0("SimData/Simple/",effort.scenario,"/samp.dt.",save.id,".RData"))
+		# add true abundance
+			samp.dt$True_Abundance = data.dt$skj.noise.patchy[samp.dt$id.data]
 		# format data
-			data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
-			colnames(data) = c("Response_variable","Year","Lon","Lat")
+			samp.dt = as.data.frame(samp.dt[,c("True_Abundance","ts","lon","lat")])
+			colnames(samp.dt) = c("True_Abundance","Year","Lon","Lat")
+		# add catchability
+			if(effort.scenario != "RandomZero")
+			{
+				Data_Geostat = add.catchability(samp.dt,seed = i,n.vessel.target = 20,new.entry.target=3,cv = 0.15,plot=FALSE)
+			} else {
+				Data_Geostat = add.catchability(samp.dt,seed = i,n.vessel.target = 20,new.entry.target=3,cv = 0,plot=FALSE)
+			}
 		# format Data_Geostat
-			Data_Geostat = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
-			colnames(Data_Geostat) = c("Response_variable","Year","Lon","Lat")
 			Data_Geostat$Spp = as.factor("skj")
 			Data_Geostat$AreaSwept_km2 = 110^2
-			Data_Geostat$Vessel = "missing"
 			Data_Geostat = as.data.frame(Data_Geostat)
+
+		# define Q_ik
+			
 		# get indices & save
 			sd.dglm = paste0("Index/Simple/",effort.scenario,"/dglm/")
 			idx_dglm = try(fit.dglm.simple(data,  agg.cell = 5, formula.stem = " ~ Year + agg.cell", data.weighting = FALSE,n.yr.rng = length(range(data$Year)[1]:range(data$Year)[2]),scale=TRUE, skj.alt2019.shp),silent=TRUE)
