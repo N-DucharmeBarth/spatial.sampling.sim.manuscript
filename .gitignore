@@ -12,6 +12,7 @@ settings.txt
 *.nc
 # ignore preliminary folder
 /preliminary_ignore
+/condor
 # ignore for latex
 *.aux
 *.bbl
