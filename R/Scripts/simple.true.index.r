@@ -15,9 +15,9 @@ setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscr
 	data.dt = data.table::as.data.table(data.dt)
 
 # create storage structure
-	true.index = matrix(NA,nrow=40,ncol=9)
+	true.index = matrix(NA,nrow=120,ncol=9)
 	colnames(true.index) = c("all",1:8)
-	rownames(true.index) = 1:40
+	rownames(true.index) = 1:120
 
 # loop over strata
 	strata.sp = skj.alt2019.shp
@@ -33,7 +33,7 @@ setwd("C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscr
 		sp::proj4string(extrap.points) = sp::proj4string(strata.sp)
 		extrap.points$valid = sp::over(extrap.points,strata.sp[i])
 		true.dt = data.table::as.data.table(extrap.points@data)
-		true.index[,i] = true.dt[ts %in% 1:40 & !is.na(valid),.(Index=sum(skj.noise.patchy)),by=ts]$Index
+		true.index[,i] = true.dt[ts %in% 1:120 & !is.na(valid),.(Index=sum(skj.noise.patchy)),by=ts]$Index
 	}
 
 # normalize by the mean
