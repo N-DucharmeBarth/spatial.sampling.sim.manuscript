@@ -18,6 +18,7 @@ add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.targe
 	# q = a + b*vessel + b*gear_config + b*class * b*bs(Poles)
 	# Q = q + e
 	# e = N(0,cv*q)
+	set.seed(seed)
 
 	# generate vessels and activity profiles
 		# initialize
@@ -36,20 +37,30 @@ add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.targe
 		# iteratively generate more vessels
 		while(max(vessel.df[,"term.yr"])<max(data$Year))
 		{
-			if(length(term.yr)==1)
-			{
-				start.yr = term.yr
-			} else {
-				start.yr = floor(mean(term.yr))
-			}
-
 			new.entries = rpois(1,new.entry.target)
 			new.entries = ifelse(new.entries==0,1,new.entries)
+			# add some variability to start year
+				if(length(term.yr)==1)
+				{
+					start.yr = term.yr
+				} else {
+					start.yr = floor(mean(term.yr))
+					start.year.adj = sample(-ceiling(vessel.life*0.25):ceiling(vessel.life*0.25),new.entries,replace=TRUE)
+					start.yr = floor(mean(term.yr)) + start.year.adj
+					start.yr = ifelse(start.yr<=0,1,start.yr)
+					if(min(start.yr)>max(term.yr))
+					{
+						start.yr[sample(1:length(start.yr),1)] = term.yr
+					}
+				}
+
 			term.yr = rpois(new.entries,vessel.life)
 			term.yr = ifelse(term.yr==0,1,term.yr)
 			term.yr = start.yr + term.yr - 1
 			term.yr = ifelse(term.yr>max(data$Year),max(data$Year),term.yr)
-			start.yr = rep(start.yr,length(term.yr))
+			# start.yr = rep(start.yr,length(term.yr))
+			term.yr = term.yr[order(start.yr)]
+			start.yr = start.yr[order(start.yr)]
 
 			vessel.df = rbind(vessel.df,cbind(rep(NA,length(term.yr)),start.yr,term.yr,rep(NA,length(term.yr)),rep(NA,length(term.yr)),rep(NA,length(term.yr))))
 		}
@@ -57,7 +68,7 @@ add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.targe
 		vessel.df$ID = 1:nrow(vessel.df)
 		vessel.df$effect = sort(rnorm(nrow(vessel.df),0,0.05))
 		vessel.df$class = c("OS","DW")[rbinom(nrow(vessel.df),size=1,prob=0.5)+1] 
-		prob.gear_config = 1/(1+exp(-0.0125*yr.rng*(vessel.df$start.yr-0.5*yr.rng)))
+		prob.gear_config = 1/(1+exp(-0.001*yr.rng*(vessel.df$start.yr-0.5*yr.rng)))
 		vessel.df$gear_config = rbinom(length(prob.gear_config),size=1,prob=prob.gear_config)+1
 		vessel.df$gear_config = ifelse(vessel.df$class == "OS",0,vessel.df$gear_config)
 
