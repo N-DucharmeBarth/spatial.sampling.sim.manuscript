@@ -56,10 +56,10 @@ for(q in c("noQ","Q"))
 		# create Start.tar.gz: data.dt.RData, fn.add.catchability.r, nino.df.RData, r361port.tar.gz, rm_except, simple.true.index.RData, sst.storage.df.RData, VAST_v8_3_0.* 
 			if(q == "Q")
 			{
-				TarList=c("data.dt.RData", "fn.add.catchability.r", "nino.df.RData", "r361port.tar.gz", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*")
+				TarList=c("condor_run.Q.r","data.dt.RData", "fn.add.catchability.r", "nino.df.RData", "r361port.tar.gz", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*")
 				shell(paste0("cd ",condor.loading.dock.dir,"& C:/cygwin64/bin/tar.exe -czvf Start.tar.gz ",paste(TarList,collapse=' ')),translate=TRUE)
 			} else {
-				TarList=c("nino.df.RData", "r361port.tar.gz", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*")
+				TarList=c("condor_run.noQ.r","nino.df.RData", "r361port.tar.gz", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*")
 				shell(paste0("cd ",condor.loading.dock.dir,"& C:/cygwin64/bin/tar.exe -czvf Start.tar.gz ",paste(TarList,collapse=' ')),translate=TRUE)
 			}
 
@@ -78,8 +78,10 @@ for(q in c("noQ","Q"))
 		# submit job
        		if(q == "Q")
        		{
+       			ssh_exec_wait(session,command=paste0('cd ',paste0(launch_machine.stem,"/",s,"_",q),'; chmod 777 runR_Q.bat'))
        			ssh_exec_wait(session,command=paste0('cd ',paste0(launch_machine.stem,"/",s,"_",q),'; condor_submit condor_Q.sub'))
        		} else {
+       			ssh_exec_wait(session,command=paste0('cd ',paste0(launch_machine.stem,"/",s,"_",q),'; chmod 777 runR_noQ.bat'))
        			ssh_exec_wait(session,command=paste0('cd ',paste0(launch_machine.stem,"/",s,"_",q),'; condor_submit condor_noQ.sub'))
        		}
 

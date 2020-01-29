@@ -33,8 +33,8 @@ echo $RHOME
 # Rscript -e 2*2
 
 # Run the Rscript
-Rscript --no-save --no-restore condor_run.noQ.r > /dev/null 2>&1
-# Rscript --no-save --no-restore condor_run.noQ.r
+Rscript --no-save --no-restore condor_run.Q.r > /dev/null 2>&1
+# Rscript --no-save --no-restore condor_run.Q.r
 
 ./rm_except vast_list.RData
 ls -l
