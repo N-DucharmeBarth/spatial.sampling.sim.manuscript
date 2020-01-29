@@ -98,6 +98,13 @@
 				mae.vec[j] = mean( abs ( est[,j] - true[,j] ) )
 			}
 
+		# calc RMSE
+			rmse.vec = rep(NA,ncol(true))
+			for(j in 1:ncol(true))
+			{
+				rmse.vec[j] = sqrt(mean(  ( est[,j] - true[,j] )^2 ))
+			}
+
 		# calc coverage
 			cover.vec = rep(NA,ncol(true))
 			for(j in 1:ncol(true))
@@ -112,7 +119,7 @@
 				rm(list=c("COVER","UCI","LCI"))
 			}
 
-		return(data.frame(bias=bias.vec,mae=mae.vec,cover=cover.vec))		
+		return(data.frame(bias=bias.vec,mae=mae.vec,rmse = rmse.vec,cover=cover.vec))		
 	}
 
 	NoEnviro.metrics = try(estimate.idx.metrics(true = simple.true.index,est = idx_vast.NoEnviro$idx[,2:10],est.se = idx_vast.NoEnviro$idx.se[,2:10]),silent=TRUE)
