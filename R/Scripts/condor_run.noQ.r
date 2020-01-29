@@ -30,9 +30,6 @@
 
 # bring in data
 	load(list.files()[grep("samp.dt",list.files())])
-	# format data
-	data = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
-	colnames(data) = c("Response_variable","Year","Lon","Lat")
 	# format Data_Geostat
 	Data_Geostat = as.data.frame(samp.dt[,c("response","ts","lon","lat")])
 	colnames(Data_Geostat) = c("Response_variable","Year","Lon","Lat")
