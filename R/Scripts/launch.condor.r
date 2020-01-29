@@ -18,13 +18,14 @@ ssh_exec_wait(session, command = paste0("mkdir -p ",launch_machine.stem))
 
 condor.files.dir = paste0(project.dir,"condor/condor.files/")
 condor.loading.dock.dir = paste0(project.dir,"condor/condor_loading_dock/")
+reps = 1:10 # which reps to use to calculate the indices
 
 for(q in c("noQ","Q"))
 {
 	for(s in c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"))
 	{
 		# grab sim data and move to loading dock
-			file.copy(from=paste0(project.dir,"SimData/Simple120/",s,"/",list.files(paste0(project.dir,"SimData/Simple120/",s,"/"))[1:10]), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+			file.copy(from=paste0(project.dir,"SimData/Simple120/",s,"/",list.files(paste0(project.dir,"SimData/Simple120/",s,"/"))[reps]), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
 
 		# grab files and move to loading dock: condor_*.sub, samp.dt.names.txt, runR_*.bat, condor_run.*.r, data.dt.RData, fn.add.catchability.r, nino.df.RData, r361port.tar.gz, rm_except, simple.true.index.RData, sst.storage.df.RData, VAST_v8_3_0.*
 			if(q == "Q")
@@ -69,9 +70,9 @@ for(q in c("noQ","Q"))
 		# send files to remote: condor_*.sub, samp.dt.names.txt, samp.dt.*.RData, runR_*.bat, Start.tar.gz
 			if(q == "Q")
 			{
-       			scp_upload(session,files=paste0(condor.loading.dock.dir,c("condor_Q.sub","samp.dt.names.txt","runR_Q.bat","Start.tar.gz",list.files(paste0(project.dir,"SimData/Simple120/",s,"/"))[1:20])),to=paste0(launch_machine.stem,"/",s,"_",q))
+       			scp_upload(session,files=paste0(condor.loading.dock.dir,c("condor_Q.sub","samp.dt.names.txt","runR_Q.bat","Start.tar.gz",list.files(paste0(project.dir,"SimData/Simple120/",s,"/"))[reps])),to=paste0(launch_machine.stem,"/",s,"_",q))
 			} else {
-       			scp_upload(session,files=paste0(condor.loading.dock.dir,c("condor_noQ.sub","samp.dt.names.txt","runR_noQ.bat","Start.tar.gz",list.files(paste0(project.dir,"SimData/Simple120/",s,"/"))[1:20])),to=paste0(launch_machine.stem,"/",s,"_",q))
+       			scp_upload(session,files=paste0(condor.loading.dock.dir,c("condor_noQ.sub","samp.dt.names.txt","runR_noQ.bat","Start.tar.gz",list.files(paste0(project.dir,"SimData/Simple120/",s,"/"))[reps])),to=paste0(launch_machine.stem,"/",s,"_",q))
 			}
 
 		# submit job
