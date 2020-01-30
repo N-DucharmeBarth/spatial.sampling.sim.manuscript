@@ -101,11 +101,11 @@ for(q in c("noQ","Q"))
 						rm(list=c("mgc","fit.time"))
 					} else {
 						# error type
-						if(grepl("singular",vast_list$vast_output[[3]])){
+						if(grepl("singular",vast_list$vast_output[[m]])){
 							error = "singular"
-						} else if (grepl("manifold",vast_list$vast_output[[3]])) {
+						} else if (grepl("manifold",vast_list$vast_output[[m]])) {
 							error = "manifold"
-						} else if (grepl("compile",vast_list$vast_output[[3]])){
+						} else if (grepl("compile",vast_list$vast_output[[m]])){
 							error = "compile"
 						} else {
 							error = "other"
