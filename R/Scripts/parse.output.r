@@ -95,8 +95,8 @@ for(q in c("noQ","Q"))
 						} else {
 							mgc = vast_list$vast_output[[m]]$max_gradient
 						}
-						diag.df$fit.time[pntm.diag] = mgc
-						diag.df$mgc[pntm.diag] = fit.time
+						diag.df$fit.time[pntm.diag] = fit.time
+						diag.df$mgc[pntm.diag] = mgc
 						metric.df$Value[pntm.met] =  as.vector(as.matrix(vast_list$vast_metric[[m]]))
 						rm(list=c("mgc","fit.time"))
 					} else {
