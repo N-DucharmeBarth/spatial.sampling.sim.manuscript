@@ -135,3 +135,7 @@ for(q in c("noQ","Q"))
 
 ssh::ssh_disconnect(session)
 
+dir.create(paste0("Index/ResultsDF/"),recursive=TRUE,showWarnings=FALSE)
+
+save(diag.df,file="Index/ResultsDF/diag.df.RData")
+save(metric.df,file="Index/ResultsDF/metric.df.RData")
