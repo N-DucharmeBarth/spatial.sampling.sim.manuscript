@@ -97,7 +97,10 @@ for(q in c("noQ","Q"))
 						}
 						diag.df$fit.time[pntm.diag] = fit.time
 						diag.df$mgc[pntm.diag] = mgc
-						metric.df$Value[pntm.met] =  as.vector(as.matrix(vast_list$vast_metric[[m]]))
+						if(length(as.vector(as.matrix(vast_list$vast_metric[[m]])))==36)
+						{
+							metric.df$Value[pntm.met] =  as.vector(as.matrix(vast_list$vast_metric[[m]]))
+						}
 						rm(list=c("mgc","fit.time"))
 					} else {
 						# error type
