@@ -33,9 +33,10 @@ setwd(project.dir)
 						  Region = c("all",1:8),
 						  Metric = c("bias","mae","rmsd","cover"))
 	metric.df$Value = NA
+	metric.df$mgc = NA
 
 # define reps to read
-	reps = 1:10
+	reps = 1:30
 
 # open connection
 session = ssh::ssh_connect("nicholasd@noumultifancl02")
@@ -97,6 +98,7 @@ for(q in c("noQ","Q"))
 						}
 						diag.df$fit.time[pntm.diag] = fit.time
 						diag.df$mgc[pntm.diag] = mgc
+						metric.df$mgc[pntm.met] = mgc
 						if(length(as.vector(as.matrix(vast_list$vast_metric[[m]])))==36)
 						{
 							metric.df$Value[pntm.met] =  as.vector(as.matrix(vast_list$vast_metric[[m]]))
