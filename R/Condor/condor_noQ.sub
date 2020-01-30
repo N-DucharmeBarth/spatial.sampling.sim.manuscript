@@ -12,7 +12,7 @@ NewProcess = $INT(plusone,%d)
 transfer_output_remaps = "vast_list.RData = $(NewProcess).vast_list.RData"
 
 Requirements =  \
-(OpSys =="LINUX") && (Arch=="X86_64") && (Machine != "OFP-VM-Rob01") && (Machine != "finlays-VirtualBox")
+(OpSys =="LINUX") && (Arch=="X86_64") && (Machine != "OFP-VM-Rob01") && (Machine != "finlays-VirtualBox") && (Machine != "NOUOFPCAND08")
 # && ((Machine == "NOUOFPCALC02.corp.spc.int")||(Machine == "NOUOFPCAND01")||(Machine == "NOUOFPCAND02")||(Machine == "NOUOFPCAND03")||(Machine == "NOUOFPCAND04")||(Machine == "NOUOFPCAND05")||(Machine == "NOUOFPCAND06")||(Machine == "NOUOFPCAND07")||(Machine == "NOUOFPCAND08")||(Machine == "nouofpcand09.corp.spc.int")||(Machine == "nouofpcand10")||(Machine == "nouofpcand11.corp.spc.int")||(Machine == "nouofpcand12"))
 
 request_memory=3GB
