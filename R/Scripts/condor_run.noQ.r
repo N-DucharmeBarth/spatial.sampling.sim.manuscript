@@ -49,12 +49,16 @@
 # fit indices
 	A = proc.time()
 	idx_vast.Enviro = try(fit.vast(Data_Geostat,RunDir=paste0(getwd()),SaveDir=paste0(getwd()),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=FALSE,Xconfig_zcp=NULL,slim.output = TRUE,strata.sp=skj.alt2019.shp,enviro=enviro),silent=TRUE)
+	gc(verbose=FALSE)
 	B = proc.time()
 	idx_vast.NoEnviro = try(fit.vast(Data_Geostat,RunDir=paste0(getwd()),SaveDir=paste0(getwd()),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=FALSE,Xconfig_zcp=NULL,slim.output=TRUE,strata.sp=skj.alt2019.shp),silent=TRUE)
+	gc(verbose=FALSE)
 	C = proc.time()
 	idx_vast.EnviroSVC = try(fit.vast(Data_Geostat,RunDir=paste0(getwd()),SaveDir=paste0(getwd()),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=FALSE,Xconfig_zcp=Xconfig_zcp.enviro,slim.output = TRUE,strata.sp=skj.alt2019.shp,enviro=enviro.svc),silent=TRUE)
+	gc(verbose=FALSE)
 	D = proc.time()
 	idx_vast.NoEnviroSVC = try(fit.vast(Data_Geostat,RunDir=paste0(getwd()),SaveDir=paste0(getwd()),save.output=FALSE,Q_ik = NULL,vf.re = FALSE,FieldConfig=c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1),RhoConfig=c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0),ObsModel_ez = c(1,3),fine_scale=FALSE,input.grid.res=1,crop.extrap.by.data=TRUE,knot_method = "grid",n_x=150,Version="VAST_v8_3_0",Method="Mesh",ADREPORT=TRUE,normalize_idx=FALSE,Xconfig_zcp=Xconfig_zcp.svc,slim.output=TRUE,strata.sp=skj.alt2019.shp,enviro=svc),silent=TRUE)
+	gc(verbose=FALSE)
 	E = proc.time()
 
 # load true.data and calc metrics
