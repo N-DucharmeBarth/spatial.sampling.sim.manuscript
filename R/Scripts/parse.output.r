@@ -97,7 +97,6 @@ for(q in c("noQ","Q"))
 				{
 					pntm.diag = which(diag.df$Scenario == s & diag.df$Catchability == q & diag.df$Replicate == r & diag.df$Model == m)
 					pntm.met = which(metric.df$Scenario == s & metric.df$Catchability == q & metric.df$Replicate == r & metric.df$Model == m)
-					pntm.ts = which(ts.df$Scenario == s & ts.df$Catchability == q & ts.df$Replicate == r & ts.df$Model == m)
 
 					# get diagnostics and metrics
 					if(length(vast_list$vast_output[[m]])>1)
@@ -123,16 +122,16 @@ for(q in c("noQ","Q"))
 							idx.raw.means = colMeans(idx.raw)
 							for(a in 1:length(idx.raw.means))
 							{
-								idx.raw[,a] = idx.raw[,a]/idx.raw.means[a]
-								ts.df$Index[pntm.ts] =  as.vector(idx.raw)
+								pntm.ts = which(ts.df$Scenario == s & ts.df$Catchability == q & ts.df$Replicate == r & ts.df$Model == m & ts.df$Region == c("all",1:8)[a])
+
+								ts.df$Index[pntm.ts] =  idx.raw[,a]/idx.raw.means[a]
 								if(length(idx.se)==1080)
 								{
-									idx.se[,a] = idx.se[,a]/idx.raw.means[a]
-									ts.df$SE[pntm.ts] =  as.vector(idx.se)
+									ts.df$SE[pntm.ts] =  idx.se[,a]/idx.raw.means[a]
 								}
 							}
 							# clean-up
-							rm(list=c("idx.raw","idx.se","idx.raw.means"))
+							rm(list=c("idx.raw","idx.se","idx.raw.means","pntm.ts"))
 						}
 						rm(list=c("mgc","fit.time"))
 					} else {
@@ -151,7 +150,7 @@ for(q in c("noQ","Q"))
 					}
 
 					# clean-up
-					rm(list=c("pntm.diag","pntm.met","pntm.ts"))
+					rm(list=c("pntm.diag","pntm.met"))
 				}
 			} else {
 				diag.df$Index[pnt] = FALSE
