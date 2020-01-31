@@ -6,6 +6,7 @@
 # store results in a data.frame
 # diag.df: Scenario, Catchability, Replicate, Model, Index, Machine, Condor.time, Fit.time, mgc, error
 # metric.df: Scenario, Catchability, Replicate, Model, Region, Metric, Value
+# ts.df: Scenario, Catchability, Replicate, Model, Region, TS, Year, Index, SE
 
 # 1) iterate over Q and noQ
 # 2) iterate over Contraction, Expansion, Fixed, Preferential, Random & Rotating
@@ -34,6 +35,17 @@ setwd(project.dir)
 						  Metric = c("bias","mae","rmsd","cover"))
 	metric.df$Value = NA
 	metric.df$mgc = NA
+
+	ts.df = expand.grid(Scenario = c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"),
+						  Catchability = c("noQ","Q"),
+						  Replicate = 1:100,
+						  Model = c("Enviro","NoEnviro","EnviroSVC","NoEnviroSVC"),
+						  Region = c("all",1:8),
+						  TS = 1:120)
+
+	ts.df$Year = seq(from=1979,length.out=120,by=0.25)[ts.df$TS]
+	ts.df$Index = NA
+	ts.df$SE = NA
 
 # define reps to read
 	reps = 1:30
@@ -85,6 +97,7 @@ for(q in c("noQ","Q"))
 				{
 					pntm.diag = which(diag.df$Scenario == s & diag.df$Catchability == q & diag.df$Replicate == r & diag.df$Model == m)
 					pntm.met = which(metric.df$Scenario == s & metric.df$Catchability == q & metric.df$Replicate == r & metric.df$Model == m)
+					pntm.ts = which(ts.df$Scenario == s & ts.df$Catchability == q & ts.df$Replicate == r & ts.df$Model == m)
 
 					# get diagnostics and metrics
 					if(length(vast_list$vast_output[[m]])>1)
@@ -103,6 +116,24 @@ for(q in c("noQ","Q"))
 						{
 							metric.df$Value[pntm.met] =  as.vector(as.matrix(vast_list$vast_metric[[m]]))
 						}
+						if(try(length(as.vector(as.matrix(vast_list$vast_output[[m]]$idx[,-1]))),silent=TRUE)==1080)
+						{
+							idx.raw = as.matrix(vast_list$vast_output[[m]]$idx[,-1])
+							idx.se = try(as.matrix(vast_list$vast_output[[m]]$idx.se[,-1]),silent=TRUE)
+							idx.raw.means = colMeans(idx.raw)
+							for(a in 1:length(idx.raw.means))
+							{
+								idx.raw[,a] = idx.raw[,a]/idx.raw.means[a]
+								ts.df$Index[pntm.ts] =  as.vector(idx.raw)
+								if(length(idx.se)==1080)
+								{
+									idx.se[,a] = idx.se[,a]/idx.raw.means[a]
+									ts.df$SE[pntm.ts] =  as.vector(idx.se)
+								}
+							}
+							# clean-up
+							rm(list=c("idx.raw","idx.se","idx.raw.means"))
+						}
 						rm(list=c("mgc","fit.time"))
 					} else {
 						# error type
@@ -120,7 +151,7 @@ for(q in c("noQ","Q"))
 					}
 
 					# clean-up
-					rm(list=c("pntm.diag","pntm.met"))
+					rm(list=c("pntm.diag","pntm.met","pntm.ts"))
 				}
 			} else {
 				diag.df$Index[pnt] = FALSE
@@ -139,3 +170,4 @@ dir.create(paste0("Index/ResultsDF/"),recursive=TRUE,showWarnings=FALSE)
 
 save(diag.df,file="Index/ResultsDF/diag.df.RData")
 save(metric.df,file="Index/ResultsDF/metric.df.RData")
+save(ts.df,file="Index/ResultsDF/ts.df.RData")
