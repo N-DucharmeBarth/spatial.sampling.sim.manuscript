@@ -18,7 +18,7 @@ ssh_exec_wait(session, command = paste0("mkdir -p ",launch_machine.stem))
 
 condor.files.dir = paste0(project.dir,"condor/condor.files/")
 condor.loading.dock.dir = paste0(project.dir,"condor/condor_loading_dock/")
-reps = 31:60 # which reps to use to calculate the indices
+reps = 61:80 # which reps to use to calculate the indices
 
 for(q in c("noQ","Q"))
 {
