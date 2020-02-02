@@ -46,6 +46,7 @@ setwd(project.dir)
 	ts.df$Year = seq(from=1979,length.out=120,by=0.25)[ts.df$TS]
 	ts.df$Index = NA
 	ts.df$SE = NA
+	ts.df$mgc = NA
 
 # define reps to read
 	reps = 1:60
@@ -123,7 +124,7 @@ for(q in c("noQ","Q"))
 							for(a in 1:length(idx.raw.means))
 							{
 								pntm.ts = which(ts.df$Scenario == s & ts.df$Catchability == q & ts.df$Replicate == r & ts.df$Model == m & ts.df$Region == c("all",1:8)[a])
-
+								ts.df$mgc[pntm.ts] =  mgc
 								ts.df$Index[pntm.ts] =  idx.raw[,a]/idx.raw.means[a]
 								if(length(idx.se)==1080)
 								{
