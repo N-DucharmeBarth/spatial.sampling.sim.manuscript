@@ -48,7 +48,7 @@ setwd(project.dir)
 	ts.df$SE = NA
 
 # define reps to read
-	reps = 1:30
+	reps = 1:60
 
 # open connection
 session = ssh::ssh_connect("nicholasd@noumultifancl02")
