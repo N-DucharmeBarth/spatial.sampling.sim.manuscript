@@ -180,12 +180,12 @@
 
 			tmp.dt = rbind(tmp.dt,nom.dt)
 			
-			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Scenario) + ggtitle(paste0("Region: ",r," - Model: ",m)) +
+			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Scenario) + ggtitle(paste0("Catchability: ",q," - Region: ",r," - Model: ",m)) +
 				geom_ribbon( aes(x=Year, ymin=Index.10,ymax=Index.90,color=NA)) + geom_line(aes(x=Year,y=Index)) + geom_point(data = true.df,aes(x=Year,y=True)) +
 			    theme_few() + scale_fill_manual(values=scales::alpha(c("#03a9f4","gray70","black"),0.5),name = "Index Type") + scale_color_manual(values = c("#0277bd","gray30","black"),name = "Index Type")
 			if(Save)
 			{
-				ggsave(filename=paste0("ts.",m,".",r,".png"), plot = p, device = "png", path = Save.Dir,
+				ggsave(filename=paste0("ts.",q,".",m,".",r,".png"), plot = p, device = "png", path = Save.Dir,
 	  			scale = 1.25, width = 9, height = 6, units = c("in"),
 	  			dpi = 300, limitsize = TRUE)
 			} else {
@@ -206,12 +206,12 @@
 
 			tmp.dt = rbind(tmp.dt,nom.dt)
 			
-			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Region) + ggtitle(paste0("Effort scenario: ",s," - Model: ",m)) +
+			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Region) + ggtitle(paste0("Catchability: ",q," - Effort scenario: ",s," - Model: ",m)) +
 				geom_ribbon( aes(x=Year, ymin=Index.10,ymax=Index.90,color=NA)) + geom_line(aes(x=Year,y=Index)) + geom_point(data = true.df,aes(x=Year,y=True)) +
 			    theme_few() + scale_fill_manual(values=scales::alpha(c("#03a9f4","gray70","black"),0.5),name = "Index Type") + scale_color_manual(values = c("#0277bd","gray30","black"),name = "Index Type")
 			if(Save)
 			{
-				ggsave(filename=paste0("ts.",m,".",s,".png"), plot = p, device = "png", path = Save.Dir,
+				ggsave(filename=paste0("ts.",q,".",m,".",s,".png"), plot = p, device = "png", path = Save.Dir,
 	  			scale = 1.25, width = 9, height = 6, units = c("in"),
 	  			dpi = 300, limitsize = TRUE)
 			} else {
