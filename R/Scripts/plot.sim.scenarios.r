@@ -19,10 +19,11 @@
 	load("Background_Data/data.dt.RData")
 
 # define plotting space
+	png(filename = "Plots/sim.scenarios.png", width = 7, height = 10, units = "in", res = 300)
 	layout(matrix(c(rep(c( 1, 1, 2, 2),1),
 					rep(c( 3, 3, 4, 4),1),
 					rep(c( 5, 6, 9, 10),1),
-					rep(c( 7, 8,11,12),1),
+					rep(c( 8, 7,12,11),1),
 					rep(c(13,13,13,13),1),
 					rep(c(14,14,15,15),1)),nrow=6,ncol=4,byrow=TRUE),heights=c(0.825,0.1,0.60,0.60,0.05,0.825),widths=c(1,1,1,1))
 	# layout.show(14)
@@ -38,8 +39,8 @@
 	points(data.abundance[,.(lon,lat)],pch=15,cex=1,col=abundance.cols[data.abundance$index])
 	plot(skj.alt2019.shp,lwd=2.5,add=TRUE)
 	plot(pacific.coast,border="gray50",col="gray90",add=TRUE)
-	text(100,60,"Skipjack",adj=c(0,1),cex=1.5)
-	text(100,55,"abundance",adj=c(0,1),cex=1.5)
+	text(100,57,"Skipjack",adj=c(0,1),cex=1.5)
+	text(100,52,"abundance",adj=c(0,1),cex=1.5)
 	# make background circles so region numbers are readable
 	for(i in 1:8)
 	{
@@ -62,7 +63,7 @@
 
 	neighbor.vec = rep(NA,nrow(pref.pts))
 	neighbor.radius = 111*5.64
-	for(i in 1:length(pref.col.index))
+	for(i in 1:length(neighbor.vec))
 	{
 		neighbor.vec[i] = length(which(geosphere::distHaversine(as.vector(as.matrix(pref.pts)[i,]),as.matrix(pref.pts))/1000 <= neighbor.radius))-1
 	}
@@ -84,18 +85,19 @@
 	plot(data.abundance[,.(lon,lat)],type="n",axes=FALSE,xlab="",ylab="",frame.plot=FALSE,asp=1)
 	plot(smooth.hull,border=NA,col=scales::alpha(pref.cols,0.15),add=TRUE)
 	plot(pacific.coast,border="gray50",col="gray90",add=TRUE)
-	text(210,45,"Preferential sampling scenario",adj=c(1,1),cex=1.5)
-	text(210,40,"effort distribution",adj=c(1,1),cex=1.5)
+	text(210,45,"Preferential",adj=c(1,1),cex=1.5)
+	text(210,40,"sampling scenario",adj=c(1,1),cex=1.5)
+	text(210,35,"effort distribution",adj=c(1,1),cex=1.5)
 
 # 3 & 4) Titles for Fixed and Rotational closures
 	par(mar=c(0,0.5,0.5,0))
 	plot(1,1,type="n",axes=FALSE,xlab="",ylab="",frame.plot=FALSE)
-	text(1,1,"Fixed Closure Scenario",cex=1.5)
+	text(1,1,"Fixed closure scenario",cex=1.5)
 	abline(h=1.40,lwd=2)
 
 	par(mar=c(0,0,0.5,0.5))
 	plot(1,1,type="n",axes=FALSE,xlab="",ylab="",frame.plot=FALSE)
-	text(1,1,"Rotating Closure Scenario",cex=1.5)  
+	text(1,1,"Rotating closure scenario",cex=1.5)  
 	abline(h=1.40,lwd=2)
 
 # 5,6,7,8) Fixed closure
@@ -108,7 +110,7 @@
 			par(mar=c(0.25,1.5,0.25,0.25))
 		} else if(i ==2){
 			par(mar=c(0.25,0.25,0.25,1.5))
-		} else if(i ==3){
+		} else if(i ==4){
 			par(mar=c(0.25,1.5,0.25,0.25))
 		} else {
 			par(mar=c(0.25,0.25,0.25,1.5))
@@ -137,7 +139,7 @@
 			par(mar=c(0.25,1.5,0.25,0.25))
 		} else if(i ==2){
 			par(mar=c(0.25,0.25,0.25,1.5))
-		} else if(i ==3){
+		} else if(i ==4){
 			par(mar=c(0.25,1.5,0.25,0.25))
 		} else {
 			par(mar=c(0.25,0.25,0.25,1.5))
@@ -178,8 +180,8 @@
 	# points(data.dt[,.(lon,lat)],pch=15,cex=1,col=abundance.cols[data.abundance$index])
 	plot(smooth.hull,border=NA,col=scales::alpha(rev(c("#64b5f6","#1976d2","#283593")),0.25),add=TRUE)
 	plot(pacific.coast,border="gray50",col="gray90",add=TRUE)
-	text(100,60,"Distance",adj=c(0,1),cex=1.5)
-	text(100,55,"from Japan",adj=c(0,1),cex=1.5)
+	text(100,57,"Distance",adj=c(0,1),cex=1.5)
+	text(100,52,"from Japan",adj=c(0,1),cex=1.5)
 	text(150,25,paste0(2500," km"),cex=1.5)
 	text(165,10,paste0(5000," km"),cex=1.5)
 	text(180,-5,paste0(7500," km"),cex=1.5)
@@ -212,8 +214,8 @@
 	}
 
 	quant.r = apply(r.mat/1000,2,quantile,probs=c(0.01,0.5,0.9))
-	par(mar=c(4,5,0.5,0.5))
-	plot(1,1,type="n",xlab="",ylab="Max distance km (000s)", xlim=range(pretty(seq(from=1979,length.out=120,by=0.25))),ylim=range(pretty(c(0,12))),cex.lab=1.5,cex.axis=1.5,las=1,yaxt="n")
+	par(mar=c(3,5,0.5,0.5))
+	plot(1,1,type="n",xlab="",ylab="Max distance km (000s)", xlim=range(pretty(seq(from=1979,length.out=120,by=0.25))),ylim=range(pretty(c(0,13))),cex.lab=1.5,cex.axis=1.5,las=1,yaxt="n")
 	axis(2,c(0,2.5,5,7.5,10),as.character(c(0,2.5,5,7.5,10)),las=1,cex.axis=1.5,cex=1.5)
 	polygon(c(seq(from=1979,length.out=120,by=0.25),rev(seq(from=1979,length.out=120,by=0.25))),c(rev(quant.r[1,]),quant.r[3,]),border=NA,col=scales::alpha("#e57373",0.5))
 	lines(seq(from=1979,length.out=120,by=0.25),rev(quant.r[2,]),lwd=3,col="#c62828")
@@ -221,5 +223,7 @@
 	lines(seq(from=1979,length.out=120,by=0.25),quant.r[2,],lwd=3,col="#283593")
 	abline(h=0)
 	abline(h=c(2.5,5,7.5),col="black",lwd=2,lty=3)
-	legend("top",c("Contraction","Expansion"),lwd=3,col=c("#283593","#c62828"),bty="n",ncol=2,cex=1.5)
+	legend("top",c("Contraction","Expansion"),lwd=3,col=c("#283593","#c62828"),bty="n",ncol=2,cex=1.5,title="Sampling scenario")
+
+	dev.off()
 
