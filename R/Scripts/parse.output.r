@@ -15,10 +15,13 @@
 project.dir = "C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim.manuscript/"
 setwd(project.dir)
 
+# define reps to read
+	reps = 61:80
+
 # define storage structures
 	diag.df = expand.grid(Scenario = c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"),
 						  Catchability = c("noQ","Q"),
-						  Replicate = 1:100,
+						  Replicate = reps,
 						  Model = c("Enviro","NoEnviro","EnviroSVC","NoEnviroSVC"))
 	diag.df$Index = NA
 	diag.df$Machine = NA
@@ -29,7 +32,7 @@ setwd(project.dir)
 
 	metric.df = expand.grid(Scenario = c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"),
 						  Catchability = c("noQ","Q"),
-						  Replicate = 1:100,
+						  Replicate = reps,
 						  Model = c("Enviro","NoEnviro","EnviroSVC","NoEnviroSVC"),
 						  Region = c("all",1:8),
 						  Metric = c("bias","mae","rmsd","cover"))
@@ -38,7 +41,7 @@ setwd(project.dir)
 
 	ts.df = expand.grid(Scenario = c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"),
 						  Catchability = c("noQ","Q"),
-						  Replicate = 1:100,
+						  Replicate = reps,
 						  Model = c("Enviro","NoEnviro","EnviroSVC","NoEnviroSVC"),
 						  Region = c("all",1:8),
 						  TS = 1:120)
@@ -47,9 +50,6 @@ setwd(project.dir)
 	ts.df$Index = NA
 	ts.df$SE = NA
 	ts.df$mgc = NA
-
-# define reps to read
-	reps = 1:60
 
 # open connection
 session = ssh::ssh_connect("nicholasd@noumultifancl02")
@@ -168,6 +168,24 @@ ssh::ssh_disconnect(session)
 
 dir.create(paste0("Index/ResultsDF/"),recursive=TRUE,showWarnings=FALSE)
 
-save(diag.df,file="Index/ResultsDF/diag.df.RData")
-save(metric.df,file="Index/ResultsDF/metric.df.RData")
-save(ts.df,file="Index/ResultsDF/ts.df.RData")
+# create temporary df
+	tmp.diag.df = diag.df
+	tmp.metric.df = metric.df
+	tmp.ts.df = ts.df
+
+# load existing df
+	load("Index/ResultsDF/diag.df.RData")
+	load("Index/ResultsDF/metric.df.RData")
+	load("Index/ResultsDF/ts.df.RData")
+
+# append to existing
+	diag.df = rbind(diag.df[-which(diag.df$Replicate %in% reps),],tmp.diag.df)
+	metric.df = rbind(metric.df[-which(metric.df$Replicate %in% reps),],tmp.metric.df)
+	ts.df = rbind(ts.df[-which(ts.df$Replicate %in% reps),],tmp.ts.df)
+
+# save
+	save(diag.df,file="Index/ResultsDF/diag.df.RData")
+	save(metric.df,file="Index/ResultsDF/metric.df.RData")
+	save(ts.df,file="Index/ResultsDF/ts.df.RData")
+
+	
