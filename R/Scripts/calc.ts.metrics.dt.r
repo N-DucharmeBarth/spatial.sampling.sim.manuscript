@@ -39,7 +39,7 @@
 	ts.metrics.dt$sample.prop = as.numeric(NA)
 	ts.metrics.dt$true = as.numeric(NA)
 	ts.metrics.dt$rmse = as.numeric(NA)
-	ts.metrics.dt$mpe = as.numeric(NA)
+	ts.metrics.dt$pe = as.numeric(NA)
 	ts.metrics.dt$ape = as.numeric(NA)
 
 # define bias function
@@ -61,6 +61,7 @@
 	first.index = seq(from=1,by=120,length.out=nrow(unique.dt))
 	last.index = seq(from=120,by=120,length.out=nrow(unique.dt))
 
+	A = proc.time()
 	for(i in 1:nrow(unique.dt))
 	{
 		# define vars
@@ -86,8 +87,10 @@
 			} else {
 				samp.dt = samp.dt[!is.na(region) & region == area]
 			}
-			sample.prop = samp.dt[,.(uCell = length(unique(id.1x1))),by=ts]$uCell/cells.per.region[area]
-			
+			sample.prop = rep(0,120)
+			tmp.dt = samp.dt[,.(uCell = length(unique(id.1x1))),by=ts]
+			sample.prop[tmp.dt$ts] = tmp.dt$uCell/cells.per.region[area]
+
 		# get true
 			true = simple.true.index[,area]
 
@@ -96,19 +99,21 @@
 
 		# calc metrics
 			rmse = sqrt(( est - true )^2)
-			mpe = 100*(est-true)/true
+			pe = 100*(est-true)/true
 			ape = 100*abs((est-true))/true
 		
 		# put in ts.metrics.dt
 			ts.metrics.dt$sample.prop[first.index[i]:last.index[i]] = sample.prop
 			ts.metrics.dt$true[first.index[i]:last.index[i]] = true
 			ts.metrics.dt$rmse[first.index[i]:last.index[i]] = rmse
-			ts.metrics.dt$mpe[first.index[i]:last.index[i]] = mpe
+			ts.metrics.dt$pe[first.index[i]:last.index[i]] = pe
 			ts.metrics.dt$ape[first.index[i]:last.index[i]] = ape
 
 		# clean-up
-			rm(list=c("s","q","rep","m","area","save.id","coords","samp.dt","sample.prop","true","est","rmse","mpe","ape"))
+			rm(list=c("s","q","rep","m","area","save.id","coords","samp.dt","sample.prop","tmp.dt","true","est","rmse","pe","ape"))
 	}
+	B = proc.time()
+	B - A
 
 # save
 	save(ts.metrics.dt,file="Index/ResultsDF/ts.metrics.dt.RData")
