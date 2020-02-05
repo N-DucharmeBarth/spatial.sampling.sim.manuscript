@@ -23,7 +23,8 @@
 	{
 		for(r in c("all",1:8))
 		{
-			plot.bias(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
+			plot.bias.coefficient(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
+			plot.bias.trend(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 			plot.rmse(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 			plot.mae(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 			plot.cover(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
