@@ -74,17 +74,18 @@ add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.targe
 
 		if(plot)
 		{
+			class.cols = c("#e53935","#64b5f6","#1976d2")
 			par(mar=c(5,5,1,1))
 			plot(1,1,type="n",xlim=range(data$Year),ylim=c(0,nrow(vessel.df)+1),ylab="Vessel",xlab="Year",cex.lab=1.5,cex.axis=1.5,las=1)
-			legend("topleft",c("OS","DW 1","DW 2","unique"),title=paste0("N = ",nrow(vessel.df)),pch=c(16,16,16,NA),lwd=c(2,2,2,NA),lty=c(2,1,1,NA),col=c("#ff6f00","#64b5f6","#3949ab",NA),fill=c(NA,NA,NA,"gray90"),border=c(NA,NA,NA,"gray65"))
+			legend("topleft",c("OS","DW 1","DW 2","unique"),title=paste0("N = ",nrow(vessel.df)),pch=c(16,16,16,NA),lwd=c(2,2,2,NA),lty=c(2,1,1,NA),col=c(class.cols,NA),fill=c(NA,NA,NA,"gray90"),border=c(NA,NA,NA,"gray65"),cex=1.5)
 			# text(0,nrow(vessel.df)+1,paste0("N = ",nrow(vessel.df)),adj=c(0,1),cex=1.5)
 			tot.activ.v = sapply(1:max(data$Year),function(x)sum(cbind( vessel.df[,2] <= x & vessel.df[,3] >= x )))
 			polygon(c(1:max(data$Year),rev(1:max(data$Year))),c(tot.activ.v,rep(0,length(tot.activ.v))),border="gray65",col="gray90")
 			for(v in 1:nrow(vessel.df))
 			{
 				cbind( vessel.df[,2] <= 1 & vessel.df[,3] >= 1 )
-				points(vessel.df[v,2:3],rep(v,2),pch=16,col=c("#ff6f00","#64b5f6","#3949ab")[vessel.df$gear_config[v]+1],cex=1.5*exp(5*vessel.df$effect[v]))
-				lines(vessel.df[v,2:3],rep(v,2),lty=ifelse(vessel.df$gear_config[v]==0,2,1),lwd=3*exp(5*vessel.df$effect[v]),col=c("#ff6f00","#64b5f6","#3949ab")[vessel.df$gear_config[v]+1])
+				points(vessel.df[v,2:3],rep(v,2),pch=16,col=class.cols[vessel.df$gear_config[v]+1],cex=1.5*exp(5*vessel.df$effect[v]))
+				lines(vessel.df[v,2:3],rep(v,2),lty=ifelse(vessel.df$gear_config[v]==0,2,1),lwd=3*exp(5*vessel.df$effect[v]),col=class.cols[vessel.df$gear_config[v]+1])
 			}
 		}
 		

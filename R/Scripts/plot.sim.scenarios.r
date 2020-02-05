@@ -215,7 +215,7 @@
 
 	quant.r = apply(r.mat/1000,2,quantile,probs=c(0.01,0.5,0.9))
 	par(mar=c(3,5,0.5,0.5))
-	plot(1,1,type="n",xlab="",ylab="Max distance km (000s)", xlim=range(pretty(seq(from=1979,length.out=120,by=0.25))),ylim=range(pretty(c(0,13))),cex.lab=1.5,cex.axis=1.5,las=1,yaxt="n")
+	plot(1,1,type="n",xlab="",ylab="Max distance km (1000s)", xlim=range(pretty(seq(from=1979,length.out=120,by=0.25))),ylim=range(pretty(c(0,13))),cex.lab=1.5,cex.axis=1.5,las=1,yaxt="n")
 	axis(2,c(0,2.5,5,7.5,10),as.character(c(0,2.5,5,7.5,10)),las=1,cex.axis=1.5,cex=1.5)
 	polygon(c(seq(from=1979,length.out=120,by=0.25),rev(seq(from=1979,length.out=120,by=0.25))),c(rev(quant.r[1,]),quant.r[3,]),border=NA,col=scales::alpha("#e57373",0.5))
 	lines(seq(from=1979,length.out=120,by=0.25),rev(quant.r[2,]),lwd=3,col="#c62828")
