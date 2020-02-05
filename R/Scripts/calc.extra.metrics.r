@@ -38,42 +38,48 @@
 	bias.coefficient = function(est,true)
 	# pass two indices
 	# http://kourentzes.com/forecasting/2014/12/17/measuring-the-behaviour-of-experts-on-demand-forecasting-a-complex-task/
+	# https://github.com/trnnick/TStools/blob/master/R/mre.R
 	{
-		est = scale(est)
-		true = scale(true)
-		error = est - true
-		complex.error.vec = as.complex(error)
-		z.vec = sqrt(complex.error.vec)
-		MRE = mean(z.vec,na.rm=TRUE)
-		a.real = Re(MRE)
-		b.im = Im(MRE)
-		r.polar = sqrt(a.real^2 + b.im^2)
-		gamma.polar = if(a.real>0){atan(b.im/a.real)}else if(a.real == 0 & b.im>0){pi/2}else{pi/4}
-		bias.k = 1 - 4*gamma.polar/pi
-		return(bias.k)
+		e = est - true
+		e = as.complex(e)
+		e = sqrt(e)
+		mre = mean(e)
+		gamma = Arg(mre)
+	  	bias = 1 - 4*gamma/pi
+		return(bias)
 	}
 
+
+
 # iterate across unique scenario/catchability/model/region/replicate
+	A  = proc.time()
 	for(i in 1:nrow(new.metrics))
 	{	
-		# A  = proc.time()
 		# extract estimated index
 			est = ts.dt[.(unique.dt$Scenario[i],unique.dt$Catchability[i],unique.dt$Replicate[i],unique.dt$Model[i],unique.dt$Region[i])]$Index
 		# get true index
 			true = simple.true.index[,unique.dt$Region[i]]
 		# calc new metrics
-		# positive sign means est>true and negative means true>est
 			new.metrics[i,"MAPE"] = 100*mean(abs((est-true)/true))
 			new.metrics[i,"MPE"] = 100*mean((est-true)/true)
 			new.metrics[i,"bias.simple"] = mean((est/true))
-			new.metrics[i,"bias.coefficient"] = -bias.coefficient(est,true)
+			new.metrics[i,"bias.coefficient"] = bias.coefficient(est,true) # positive sign means est>true and negative sign means est<true
 		# clean-up
 			rm(list=c("est","true"))
-		# B = proc.time()
-		# B - A
 	}
+	B = proc.time()
+	B - A
 
 # append new metrics to metric.df
+	unique.dt = rbind(unique.dt,unique.dt,unique.dt,unique.dt)
+	unique.dt$Metric = c(rep("MAPE",nrow(new.metrics)),rep("MPE",nrow(new.metrics)),rep("bias.simple",nrow(new.metrics)),rep("bias.coefficient",nrow(new.metrics)))
+	unique.dt$Value = c(new.metrics[,"MAPE"],new.metrics[,"MPE"],new.metrics[,"bias.simple"],new.metrics[,"bias.coefficient"])
+	unique.dt = unique.dt[,.(Scenario,Catchability,Replicate,Model,Region,Metric,Value,mgc)]
+	metric.df = rbind(metric.df,unique.dt)
 
+# remove duplicate rows
+	metric.df = unique(metric.df)
 
 # save
+	save(metric.df,file="Index/ResultsDF/metric.df.RData")
+
