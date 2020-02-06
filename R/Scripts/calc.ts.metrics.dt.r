@@ -19,11 +19,52 @@
 # load true
 	load("SimData/simple.true.index.RData")
 
-# calculate the number of 1x1 cells in each spatial region & not on land
-	coords = SpatialPoints(expand.grid(lon=105:215,lat=-25:55),proj4string=CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
-	cells.per.region = summary(as.factor(as.character(over(coords,skj.alt2019.shp)*ifelse(is.na(over(coords,pacific.coast)),1,NA))))[1:8]
-	cells.per.region = c(sum(cells.per.region),cells.per.region)
-	names(cells.per.region)[1] = "all"
+# get the spatial knot associated with each 1x1 cell
+			strata.limits = data.frame('STRATA'="All_areas")
+			Region = "user"
+			input.grid.res = 1
+			strata.sp = skj.alt2019.shp
+			Data_Geostat = expand.grid(Lon=100:210,Lat=-20:50)
+			Data_Geostat$id.1x1 = paste0(Data_Geostat$Lat,".",Data_Geostat$Lon)
+			grid_size_km = (110 * input.grid.res)^2 # the distance between grid cells for the 2D AR1 grid if Method == "Grid"
+			grid_bounds = c(floor(min(Data_Geostat[,c("Lat")])/5)*5,ceiling(max(Data_Geostat[,c("Lat")])/5)*5,floor(min(Data_Geostat[,c("Lon")])/5)*5,ceiling(max(Data_Geostat[,c("Lon")])/5)*5)
+			input.grid = as.matrix(expand.grid(Lat = seq(from=grid_bounds[1],to=grid_bounds[2],by=input.grid.res),
+					Lon = seq(from=grid_bounds[3],to=grid_bounds[4],by=input.grid.res), Area_km2 = grid_size_km))
+			crs.en = paste0("+proj=tpeqd +lat_1=",mean(grid_bounds[1:2])," +lon_1=",round(grid_bounds[3] + (1/3)*abs(diff(grid_bounds[3:4])))," +lat_2=",mean(grid_bounds[1:2])," +lon_2=",round(grid_bounds[3] + (2/3)*abs(diff(grid_bounds[3:4])))," +datum=WGS84 +ellps=WGS84 +units=km +no_defs")
+			crs.ll = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+			Extrapolation_List = make_extrapolation_info.ndd(Region = Region,strata.limits = strata.limits,input.grid = input.grid, crs.en = crs.en,crs.ll = crs.ll,strata.sp)
+			 extrap.df = as.data.frame(Extrapolation_List$Data_Extrap)
+			sp::coordinates(extrap.df) = ~E_km + N_km
+			sp::proj4string(extrap.df) = crs.en
+			pacific.coast = sp::spTransform(pacific.coast,crs.en)
+			over.index.land = which(is.na(sp::over(extrap.df,pacific.coast)))
+			# find overlap with data hull
+			smooth.hull = smooth.hull.sp(Data_Geostat[,c("Lon","Lat")],crs.ll=crs.ll,buffer.ll=2.5,d.scalar = 0.15)
+			# plot(smooth.hull)
+			smooth.hull.trans = sp::spTransform(smooth.hull,crs.en)
+			# identify number of extrapolation cells (within data hull and not on land) corresponding to each knot
+				over.index.region = which(!is.na(sp::over(extrap.df,smooth.hull.trans)))
+				over.index = intersect(over.index.land,over.index.region)
+			over.index = over.index.land
+			Extrapolation_List$a_el = data.frame(All_areas = Extrapolation_List$a_el[over.index,])
+			Extrapolation_List$Data_Extrap = Extrapolation_List$Data_Extrap[over.index,]
+			Extrapolation_List$Area_km2_x = Extrapolation_List$Area_km2_x[over.index]
+			seed = 123 
+			Spatial_List = make_spatial_info.ndd(n_x=150, Lon_i=Data_Geostat[,'Lon'], Lat_i=Data_Geostat[,'Lat'], Extrapolation_List = Extrapolation_List, knot_method="grid", Method="Mesh",
+												  grid_size_km=grid_size_km, grid_size_LL=input.grid.res, fine_scale=FALSE, Network_sz_LL=NULL,
+												  iter.max=1000, randomseed=seed, nstart=100, DirPath="/tmp", Save_Results=FALSE,crs.en = crs.en,crs.ll = crs.ll)
+
+			Data_Geostat = cbind(Data_Geostat, knot_i = Spatial_List$knot_i)
+
+
+# get the number of knots in each region
+	data(pacific.coast)
+	coords = SpatialPoints(cbind(Data_Geostat$Lon,Data_Geostat$Lat),proj4string=CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+	Data_Geostat$area = over(coords,skj.alt2019.shp)*ifelse(is.na(over(coords,pacific.coast)),1,NA)
+	Data_Geostat.dt = as.data.table(Data_Geostat)
+	knots.per.region = Data_Geostat.dt[!is.na(area),.(N=length(unique(knot_i))),by=area][order(area)]$N
+	knots.per.region = c(length(unique(Data_Geostat$knot_i)),knots.per.region)
+	names(knots.per.region) = c("all",1:8)
 
 # bring in ts.df
 	load("Index/ResultsDF/ts.df.RData")
@@ -78,18 +119,19 @@
 			load(paste0("SimData/Simple120/",s,"/samp.dt.",save.id,".RData"))
 
 		# calc sample.prop
-			coords =  SpatialPoints(as.matrix(samp.dt[,.(lon,lat)]),proj4string=CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
-			samp.dt$region = as.character(over(coords,skj.alt2019.shp))
-			samp.dt$id.1x1 = as.numeric(as.factor(paste0(samp.dt$lon,"_",samp.dt$lat)))
 			if(area == "all")
 			{
-				samp.dt = samp.dt[!is.na(region)]
+				tmp.dg = Data_Geostat.dt[!is.na(area)]
 			} else {
-				samp.dt = samp.dt[!is.na(region) & region == area]
+				tmp.dg = Data_Geostat.dt[area == as.character(unique.dt$Region[i])]
 			}
+
+			samp.dt$id.1x1 = paste0(samp.dt$lat,".",samp.dt$lon)
+			samp.dt$knot_i = tmp.dg$knot_i[match(samp.dt$id.1x1,tmp.dg$id.1x1)]
+
 			sample.prop = rep(0,120)
-			tmp.dt = samp.dt[,.(uCell = length(unique(id.1x1))),by=ts]
-			sample.prop[tmp.dt$ts] = tmp.dt$uCell/cells.per.region[area]
+			tmp.dt = samp.dt[,.(uknots = length(unique(knot_i))),by=ts]
+			sample.prop[tmp.dt$ts] = tmp.dt$uknots/knots.per.region[area]
 
 		# get true
 			true = simple.true.index[,area]
@@ -110,7 +152,7 @@
 			ts.metrics.dt$ape[first.index[i]:last.index[i]] = ape
 
 		# clean-up
-			rm(list=c("s","q","rep","m","area","save.id","coords","samp.dt","sample.prop","tmp.dt","true","est","rmse","pe","ape"))
+			rm(list=c("s","q","rep","m","area","save.id","tmp.dg","samp.dt","sample.prop","tmp.dt","true","est","rmse","pe","ape"))
 	}
 	B = proc.time()
 	B - A
