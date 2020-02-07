@@ -16,7 +16,7 @@ project.dir = "C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim
 setwd(project.dir)
 
 # define reps to read
-	reps = 61:80
+	reps = 81:100
 
 # define storage structures
 	diag.df = expand.grid(Scenario = c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"),
@@ -188,4 +188,3 @@ dir.create(paste0("Index/ResultsDF/"),recursive=TRUE,showWarnings=FALSE)
 	save(metric.df,file="Index/ResultsDF/metric.df.RData")
 	save(ts.df,file="Index/ResultsDF/ts.df.RData")
 
-	
