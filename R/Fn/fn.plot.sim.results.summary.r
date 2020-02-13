@@ -166,7 +166,7 @@
 	plot.cover = function(metric.df,r,q,Save,Save.Dir)
 	{
 		# prep data
-			tmp.df = na.omit(subset(metric.df,Metric=="cover"&Region==r&Catchability==q&mgc<=1e-04))
+			tmp.df = na.omit(subset(metric.df,Metric=="cover.50"&Region==r&Catchability==q&mgc<=1e-04))
 
 		# define helper function for calculating sample size
 			n_bias <- function(y, upper_limit = 100) {
@@ -248,5 +248,36 @@
 			} else {
 				p
 			}
+		}
+	}
+
+	plot.mpe = function(metric.df,r,q,Save,Save.Dir)
+	{
+		# prep data
+			tmp.df = na.omit(subset(metric.df,Metric=="MPE"&Region==r&Catchability==q&mgc<=1e-04))
+
+		# define helper function for calculating sample size
+			n_bias <- function(y, upper_limit = 10) {
+			  return( 
+			    data.frame(
+			      y = 0.75 * upper_limit,
+			      label = paste(length(y), '\n')
+			    )
+			  )
+			}
+
+		# define plot
+			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(-10,-5,5,10),size=0.5,linetype="longdash",colour="gray70") +
+     		geom_boxplot(outlier.color="gray60") + ylim(-10,10) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
+     		geom_hline(yintercept = c(0),size=0.5,linetype="longdash",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab("MPE (%)")+
+     		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
+
+		if(Save)
+		{
+			ggsave(filename=paste0("mpe.",r,".",q,".png"), plot = p, device = "png", path = Save.Dir,
+  			scale = 1.25, width = 6, height = 6, units = c("in"),
+  			dpi = 300, limitsize = TRUE)
+		} else {
+			p
 		}
 	}

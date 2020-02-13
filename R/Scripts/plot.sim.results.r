@@ -27,6 +27,7 @@
 			plot.bias.trend(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 			plot.rmse(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 			plot.mae(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
+			plot.mpe(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 			plot.cover(metric.df,r=r,q=q,Save=TRUE,Save.Dir="Plots/Metric/")
 		}
 	}
