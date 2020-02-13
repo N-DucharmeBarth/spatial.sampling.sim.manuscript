@@ -172,7 +172,7 @@
 			n_bias <- function(y, upper_limit = 100) {
 			  return( 
 			    data.frame(
-			      y = 0.05 * upper_limit,
+			      y = 0.85 * upper_limit,
 			      label = paste(length(y), '\n')
 			    )
 			  )
