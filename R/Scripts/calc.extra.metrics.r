@@ -80,21 +80,21 @@
 			}
 
 		# clean-up
-			rm(list=c("est","true","est.se",))
+			rm(list=c("est","true","est.se"))
 	}
 	B = proc.time()
 	B - A
 
 # append new metrics to metric.df
-	unique.dt = rbind(unique.dt,unique.dt,unique.dt,unique.dt)
-	unique.dt$Metric = c(rep("MAPE",nrow(new.metrics)),rep("MPE",nrow(new.metrics)),rep("bias.simple",nrow(new.metrics)),rep("bias.coefficient",nrow(new.metrics)))
-	unique.dt$Value = c(new.metrics[,"MAPE"],new.metrics[,"MPE"],new.metrics[,"bias.simple"],new.metrics[,"bias.coefficient"])
+	unique.dt = rbind(unique.dt,unique.dt,unique.dt,unique.dt,unique.dt)
+	unique.dt$Metric = c(rep("MAPE",nrow(new.metrics)),rep("MPE",nrow(new.metrics)),rep("bias.simple",nrow(new.metrics)),rep("bias.coefficient",nrow(new.metrics)),rep("cover.50",nrow(new.metrics)))
+	unique.dt$Value = c(new.metrics[,"MAPE"],new.metrics[,"MPE"],new.metrics[,"bias.simple"],new.metrics[,"bias.coefficient"],new.metrics[,"cover.50"])
 	unique.dt = unique.dt[,.(Scenario,Catchability,Replicate,Model,Region,Metric,Value,mgc)]
 	# remove previously calculated "new metrics"
 	"%ni%" = Negate("%in%")
 	metric.df = as.data.table(metric.df)
 	metric.df = metric.df[Metric %ni% c("MAPE","MPE","bias.simple","bias.coefficient","cover.50")]
-	metric.df = rbind(metric.df,unique.dt)
+	metric.df = as.data.frame(rbind(metric.df,unique.dt))
 
 # remove duplicate rows
 	metric.df = unique(metric.df)
