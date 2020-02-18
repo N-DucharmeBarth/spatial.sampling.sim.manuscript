@@ -21,3 +21,5 @@ settings.txt
 *.out
 *.spl
 *.synctex.gz
+# ignore for word
+/Manuscript/~*
