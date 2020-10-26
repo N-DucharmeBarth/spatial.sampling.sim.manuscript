@@ -22,4 +22,4 @@ settings.txt
 *.spl
 *.synctex.gz
 # ignore for word
-/Manuscript/~*
+/Manuscript/
