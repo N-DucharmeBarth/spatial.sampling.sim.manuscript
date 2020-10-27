@@ -13,6 +13,7 @@ settings.txt
 # ignore preliminary folder
 /preliminary_ignore
 /condor
+/CaseStudy/
 # ignore for latex
 *.aux
 *.bbl
