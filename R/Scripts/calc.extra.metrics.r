@@ -14,8 +14,8 @@
 	setwd(project.dir)
 
 # bring in metric.df
-	load("Index/ResultsDF/metric.df.RData")
-	load("Index/ResultsDF/ts.df.RData")
+	load("Index/ResultsDF/metric.MR.df.RData")
+	load("Index/ResultsDF/ts.df.MR.RData")
 	load("SimData/simple.true.index.RData")
 	ts.dt = as.data.table(ts.df)
 	setkey(ts.dt,Scenario,Catchability,Replicate,Model,Region)
@@ -31,8 +31,8 @@
 	unique.dt = unique(unique.dt[!is.na(mgc),.(Scenario,Catchability,Replicate,Model,Region,mgc)])
 
 # define new metric storage structure
-	new.metrics = matrix(NA,nrow=nrow(unique.dt),ncol=5)
-	colnames(new.metrics) = c("MAPE", "MPE", "bias.simple", "bias.coefficient","cover.50")
+	new.metrics = matrix(NA,nrow=nrow(unique.dt),ncol=6)
+	colnames(new.metrics) = c("MAPE", "MPE", "bias.simple", "bias.coefficient","cover.50","MRB")
 
 # define bias function
 	bias.coefficient = function(est,true)
@@ -62,9 +62,10 @@
 		# get true index
 			true = simple.true.index[,unique.dt$Region[i]]
 		# calc new metrics
-			new.metrics[i,"MAPE"] = 100*median(abs((est-true)/true))
-			new.metrics[i,"MPE"] = 100*median((est-true)/true)
-			new.metrics[i,"bias.simple"] = median((est/true))
+			new.metrics[i,"MAPE"] = 100*mean(abs((est-true)/true))
+			new.metrics[i,"MPE"] = 100*mean((est-true)/true)
+			new.metrics[i,"MRB"] = mean((est-true))
+			new.metrics[i,"bias.simple"] = mean((est/true))
 			new.metrics[i,"bias.coefficient"] = bias.coefficient(est,true) # positive sign means est>true and negative sign means est<true
 			if(mean(is.na(est.se))==0)
 			{
@@ -86,19 +87,19 @@
 	B - A
 
 # append new metrics to metric.df
-	unique.dt = rbind(unique.dt,unique.dt,unique.dt,unique.dt,unique.dt)
-	unique.dt$Metric = c(rep("MAPE",nrow(new.metrics)),rep("MPE",nrow(new.metrics)),rep("bias.simple",nrow(new.metrics)),rep("bias.coefficient",nrow(new.metrics)),rep("cover.50",nrow(new.metrics)))
-	unique.dt$Value = c(new.metrics[,"MAPE"],new.metrics[,"MPE"],new.metrics[,"bias.simple"],new.metrics[,"bias.coefficient"],new.metrics[,"cover.50"])
+	unique.dt = rbind(unique.dt,unique.dt,unique.dt,unique.dt,unique.dt,unique.dt)
+	unique.dt$Metric = c(rep("MAPE",nrow(new.metrics)),rep("MPE",nrow(new.metrics)),rep("bias.simple",nrow(new.metrics)),rep("bias.coefficient",nrow(new.metrics)),rep("cover.50",nrow(new.metrics)),rep("MRB",nrow(new.metrics)))
+	unique.dt$Value = c(new.metrics[,"MAPE"],new.metrics[,"MPE"],new.metrics[,"bias.simple"],new.metrics[,"bias.coefficient"],new.metrics[,"cover.50"],new.metrics[,"MRB"])
 	unique.dt = unique.dt[,.(Scenario,Catchability,Replicate,Model,Region,Metric,Value,mgc)]
 	# remove previously calculated "new metrics"
 	"%ni%" = Negate("%in%")
 	metric.df = as.data.table(metric.df)
-	metric.df = metric.df[Metric %ni% c("MAPE","MPE","bias.simple","bias.coefficient","cover.50")]
+	metric.df = metric.df[Metric %ni% c("MAPE","MPE","bias.simple","bias.coefficient","cover.50","MRB")]
 	metric.df = as.data.frame(rbind(metric.df,unique.dt))
 
 # remove duplicate rows
 	metric.df = unique(metric.df)
 
 # save
-	save(metric.df,file="Index/ResultsDF/metric.df.RData")
+	save(metric.df,file="Index/ResultsDF/metric.MR.df.RData")
 

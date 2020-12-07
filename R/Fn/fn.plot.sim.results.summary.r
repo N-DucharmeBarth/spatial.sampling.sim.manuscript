@@ -57,7 +57,7 @@
 		# define plot
 			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(0,0.5,1.5),size=0.5,linetype="longdash",colour="gray70") +
      		geom_boxplot(outlier.color="gray60") + ylim(0,1.5) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
-     		geom_hline(yintercept = 1,size=1,linetype="longdash",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab("Bias")+
+     		geom_hline(yintercept = 1,size=1,linetype="longdash",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab("Bias")+
      		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
 
 		if(Save)
@@ -88,7 +88,7 @@
 		# define plot
 			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(-0.5,0.5),size=0.5,linetype="longdash",colour="gray70") +
      		geom_boxplot(outlier.color="gray60") + ylim(-1,1) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
-     		geom_hline(yintercept = 0,size=1,linetype="longdash",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab(expression(paste("Bias coefficient (",kappa,")")))+
+     		geom_hline(yintercept = 0,size=1,linetype="longdash",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab(expression(paste("Bias coefficient (",kappa,")")))+
      		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
 
 		if(Save)
@@ -119,7 +119,7 @@
 		# define plot
 			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(0.1,0.2,0.3),size=0.5,linetype="longdash",colour="gray70") +
      		geom_boxplot(outlier.color="gray60") + ylim(0,0.3) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
-     		geom_hline(yintercept = 0,size=1,linetype="solid",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab("RMSE")+
+     		geom_hline(yintercept = 0,size=1,linetype="solid",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab("RMSE")+
      		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
 
 		if(Save)
@@ -150,7 +150,7 @@
 		# define plot
 			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(0.1,0.2,0.3),size=0.5,linetype="longdash",colour="gray70") +
      		geom_boxplot(outlier.color="gray60") + ylim(0,0.3) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
-     		geom_hline(yintercept = 0,size=1,linetype="solid",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab("MAE")+
+     		geom_hline(yintercept = 0,size=1,linetype="solid",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab("MAE")+
      		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
 
 		if(Save)
@@ -181,7 +181,7 @@
 		# define plot
 			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(0,25,75,100),size=0.5,linetype="longdash",colour="gray70") +
      		geom_boxplot(outlier.color="gray60") + ylim(0,100) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
-     		geom_hline(yintercept = 50,size=1,linetype="longdash",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab("Cover")+
+     		geom_hline(yintercept = 50,size=1,linetype="longdash",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab("Cover")+
      		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
 
 		if(Save)
@@ -211,7 +211,7 @@
 
 			tmp.dt = rbind(tmp.dt,nom.dt)
 			
-			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Scenario) + ggtitle(paste0("Catchability: ",q," - Region: ",r," - Model: ",m)) +
+			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Scenario) + ggtitle(paste0("Catchability: ",q,", Region: ",r,", Model: ",m)) +
 				geom_ribbon( aes(x=Year, ymin=Index.10,ymax=Index.90,color=NA)) + geom_line(aes(x=Year,y=Index)) + geom_point(data = true.df,aes(x=Year,y=True)) +
 			    theme_few() + scale_fill_manual(values=scales::alpha(c("#03a9f4","gray70","black"),0.5),name = "Index Type") + scale_color_manual(values = c("#0277bd","gray30","black"),name = "Index Type")
 			if(Save)
@@ -237,7 +237,7 @@
 
 			tmp.dt = rbind(tmp.dt,nom.dt)
 			
-			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Region) + ggtitle(paste0("Catchability: ",q," - Effort scenario: ",s," - Model: ",m)) +
+			p = ggplot(data = tmp.dt, aes(x=Year, y=Index,color=Model,fill=Model)) + facet_wrap(~Region) + ggtitle(paste0("Catchability: ",q,", Effort scenario: ",s,", Model: ",m)) +
 				geom_ribbon( aes(x=Year, ymin=Index.10,ymax=Index.90,color=NA)) + geom_line(aes(x=Year,y=Index)) + geom_point(data = true.df,aes(x=Year,y=True)) +
 			    theme_few() + scale_fill_manual(values=scales::alpha(c("#03a9f4","gray70","black"),0.5),name = "Index Type") + scale_color_manual(values = c("#0277bd","gray30","black"),name = "Index Type")
 			if(Save)
@@ -255,9 +255,10 @@
 	{
 		# prep data
 			tmp.df = na.omit(subset(metric.df,Metric=="MPE"&Region==r&Catchability==q&mgc<=1e-04))
+			max.y = max(abs(range(tmp.df$Value)))
 
 		# define helper function for calculating sample size
-			n_bias <- function(y, upper_limit = 10) {
+			n_bias <- function(y, upper_limit = max.y) {
 			  return( 
 			    data.frame(
 			      y = 0.75 * upper_limit,
@@ -267,14 +268,47 @@
 			}
 
 		# define plot
-			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = c(-10,-5,5,10),size=0.5,linetype="longdash",colour="gray70") +
-     		geom_boxplot(outlier.color="gray60") + ylim(-10,10) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
-     		geom_hline(yintercept = c(0),size=0.5,linetype="longdash",colour="black") + xlab(paste0("Region: ",r," Simulation: ",q)) + ylab("MPE (%)")+
+			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + geom_hline(yintercept = pretty(c(-max.y,max.y)),size=0.5,linetype="longdash",colour="gray70") +
+     		geom_boxplot(outlier.color="gray60") + ylim(range(pretty(c(-max.y,max.y)))[1],range(pretty(c(-max.y,max.y)))[2]) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
+     		geom_hline(yintercept = c(0),size=0.5,linetype="longdash",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab("MPE (%)")+
      		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
 
 		if(Save)
 		{
 			ggsave(filename=paste0("mpe.",r,".",q,".png"), plot = p, device = "png", path = Save.Dir,
+  			scale = 1.25, width = 6, height = 6, units = c("in"),
+  			dpi = 300, limitsize = TRUE)
+		} else {
+			p
+		}
+	}
+
+	plot.mrb = function(metric.df,r,q,Save,Save.Dir)
+	{
+		# prep data
+			tmp.df = na.omit(subset(metric.df,Metric=="MRB"&Region==r&Catchability==q&mgc<=1e-04))
+
+		max.y = max(abs(range(tmp.df$Value)))
+
+		# define helper function for calculating sample size
+			n_bias <- function(y, upper_limit = max.y) {
+			  return( 
+			    data.frame(
+			      y = 0.75 * upper_limit,
+			      label = paste(length(y), '\n')
+			    )
+			  )
+			}
+
+		# define plot
+			p = ggplot(data = tmp.df, aes(x=Scenario, y=Value,fill=Model)) + # geom_hline(yintercept = c(-10,-5,5,10),size=0.5,linetype="longdash",colour="gray70") +
+     		geom_boxplot(outlier.color="gray60") + ylim(-max.y,max.y) + stat_summary(fun.data = n_bias,geom="text",position = position_dodge(width = 0.75), aes(group=Model)) +
+     		geom_hline(yintercept = c(0),size=0.5,linetype="longdash",colour="black") + xlab(paste0("Region: ",r,", Simulation: ",q)) + ylab("MRB")+
+     		facet_wrap( ~ Scenario, scales="free_x") + theme_few() + scale_fill_manual(values=economist_pal()(4))
+
+		if(Save)
+		{
+			ggsave(filename=paste0("mrb.",r,".",q,".png"), plot = p, device = "png", path = Save.Dir,
   			scale = 1.25, width = 6, height = 6, units = c("in"),
   			dpi = 300, limitsize = TRUE)
 		} else {

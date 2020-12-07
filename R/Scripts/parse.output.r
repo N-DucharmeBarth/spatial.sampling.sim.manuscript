@@ -16,7 +16,7 @@ project.dir = "C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim
 setwd(project.dir)
 
 # define reps to read
-	reps = 81:100
+	reps = 1:100
 
 # define storage structures
 	diag.df = expand.grid(Scenario = c("Contraction", "Expansion", "Fixed", "Preferential", "Random", "Rotating"),
@@ -52,7 +52,7 @@ setwd(project.dir)
 	ts.df$mgc = NA
 
 # open connection
-session = ssh::ssh_connect("nicholasd@noumultifancl02")
+session = ssh::ssh_connect("nicholasd@suvofpsubmit")
 
 for(q in c("noQ","Q"))
 {
@@ -62,8 +62,8 @@ for(q in c("noQ","Q"))
 		{
 			pnt = which(diag.df$Scenario == s & diag.df$Catchability == q & diag.df$Replicate == r)
 			# read vast_output & read from log
-				try(load(paste0("Index/Simple120/",s,"_",q,"/vast/",r,".vast_list.RData")),silent=TRUE)
-				log = try(readLines(paste0("Index/Simple120/",s,"_",q,"/log/",list.files(paste0("Index/Simple120/",s,"_",q,"/log"))[grep(paste0(".",r,".condor_R.log"),list.files(paste0("Index/Simple120/","/",s,"_",q,"/log")),fixed=TRUE)])),silent=TRUE)
+				try(load(paste0("Index/Simple120_moreRAM/",s,"_",q,"/vast/",r,".vast_list.RData")),silent=TRUE)
+				log = try(readLines(paste0("Index/Simple120_moreRAM/",s,"_",q,"/log/",list.files(paste0("Index/Simple120_moreRAM/",s,"_",q,"/log"))[grep(paste0(".",r,".condor_R.log"),list.files(paste0("Index/Simple120_moreRAM/","/",s,"_",q,"/log")),fixed=TRUE)])),silent=TRUE)
 				if("vast_list" %in% ls() == FALSE){vast_list = NULL}
 			# parse log
 				if(length(log)>1)
@@ -168,23 +168,23 @@ ssh::ssh_disconnect(session)
 
 dir.create(paste0("Index/ResultsDF/"),recursive=TRUE,showWarnings=FALSE)
 
-# create temporary df
-	tmp.diag.df = diag.df
-	tmp.metric.df = metric.df
-	tmp.ts.df = ts.df
+# # create temporary df
+# 	tmp.diag.df = diag.df
+# 	tmp.metric.df = metric.df
+# 	tmp.ts.df = ts.df
 
-# load existing df
-	load("Index/ResultsDF/diag.df.RData")
-	load("Index/ResultsDF/metric.df.RData")
-	load("Index/ResultsDF/ts.df.RData")
+# # load existing df
+# 	load("Index/ResultsDF/diag.df.RData")
+# 	load("Index/ResultsDF/metric.df.RData")
+# 	load("Index/ResultsDF/ts.df.RData")
 
-# append to existing
-	diag.df = rbind(diag.df[-which(diag.df$Replicate %in% reps),],tmp.diag.df)
-	metric.df = rbind(metric.df[-which(metric.df$Replicate %in% reps),],tmp.metric.df)
-	ts.df = rbind(ts.df[-which(ts.df$Replicate %in% reps),],tmp.ts.df)
+# # append to existing
+# 	diag.df = rbind(diag.df[-which(diag.df$Replicate %in% reps),],tmp.diag.df)
+# 	metric.df = rbind(metric.df[-which(metric.df$Replicate %in% reps),],tmp.metric.df)
+# 	ts.df = rbind(ts.df[-which(ts.df$Replicate %in% reps),],tmp.ts.df)
 
 # save
-	save(diag.df,file="Index/ResultsDF/diag.df.RData")
-	save(metric.df,file="Index/ResultsDF/metric.df.RData")
-	save(ts.df,file="Index/ResultsDF/ts.df.RData")
+	save(diag.df,file="Index/ResultsDF/diag.MR.df.RData")
+	save(metric.df,file="Index/ResultsDF/metric.MR.df.RData")
+	save(ts.df,file="Index/ResultsDF/ts.df.MR.RData")
 

@@ -11,6 +11,8 @@ settings.txt
 *.csv
 *.png
 *.nc
+*~
+*.pptx
 # ignore preliminary folder
 /preliminary_ignore
 /condor

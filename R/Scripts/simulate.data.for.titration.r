@@ -114,3 +114,52 @@ for(i in 1:10)
 		iter = iter +1
 	}
 }
+
+plot.titration.scenarios = function(ts.sampled = c(1,120), random.seed = i,var.tune=var.tune.vec[j],min.dist=min.dist.vec[j],line.color="gray70")
+{
+	# set seed
+		set.seed(random.seed)
+
+	# subset to desired ts
+		valid.ts = ts.sampled[1]:ts.sampled[2]	
+
+	# define maximum distance per ts
+	# allow for constrained brownian excursion between min distance and max distance during the middle 75% ts
+	# brownian excursion code taken from https://stats.stackexchange.com/questions/163047/simulating-a-brownian-excursion-using-a-brownian-bridge
+	# specifically whuber's answer
+		max.dist = 10000
+		r.vec = rep(NA,length(valid.ts))
+		ts.quantiles =  floor(quantile(valid.ts,probs = seq(0, 1, 0.125)))
+		r.vec[which(valid.ts == ts.quantiles[1]):which(valid.ts == ts.quantiles[2])] = max.dist
+		r.vec[which(valid.ts == ts.quantiles[8]):which(valid.ts == ts.quantiles[9])] = min.dist
+		bridge.index = which(is.na(r.vec))
+
+		bridge.n = length(bridge.index)
+		bridge.times = seq(0, 1, length.out=bridge.n)
+		bridge.target = max.dist - min.dist # Constraint at time=1
+		bridge.dW = rnorm(bridge.n,0,var.tune*min.dist)
+		bridge.W = cumsum(bridge.dW)
+		bridge.B = bridge.W + bridge.times * (bridge.target - bridge.W[bridge.n])   # The Brownian bridge from (0,0) to (1,target)
+		bridge.range = 2*(bridge.target - 0)
+		bridge.B = (bridge.B - 0) %% bridge.range
+		bridge.B = pmin(bridge.B, bridge.range-bridge.B) + 0
+		r.vec[bridge.index] = rev(min.dist + bridge.B)
+
+	lines(seq(from=1979,length.out=120,by=0.25)[valid.ts],r.vec/1000,col=line.color,lwd=1.5)
+}
+
+line.col.vec = colorRampPalette(c("gray70","#80deea","#29b6f6","#1e88e5","#283593"))(length(min.dist.vec))
+png(filename = "Plots/sim.titration.scenarios.png", width = 7, height = 7, units = "in", res = 300)
+plot(1,1,type="n",xlab="Year",ylab="Annual max distance km (1000s)", xlim=range(pretty(seq(from=1979,length.out=120,by=0.25))),ylim=range(pretty(c(0,10))),cex=1.5,cex.lab=1.5,cex.axis=1.5,las=1)
+for(i in 1:10)
+{
+	for(j in 1:length(min.dist.vec))
+	{
+		plot.titration.scenarios(ts.sampled = c(1,120), random.seed = i,var.tune=var.tune.vec[j],min.dist=min.dist.vec[j],line.color=line.col.vec[j])
+
+	}
+}
+legend("bottomleft",legend=rev(round(min.dist.vec/5)*5),col=rev(line.col.vec),lwd=5,title="Max dist. terminal year km",cex=1.5,bty="n",ncol=2)
+dev.off()
+
+

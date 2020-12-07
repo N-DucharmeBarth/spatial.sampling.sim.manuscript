@@ -12,13 +12,36 @@ project.dir = "C:/Users/nicholasd/HOME/SPC/SPC_SAM/Geostats/spatial.sampling.sim
 setwd(project.dir)	
 library(ssh)
 
-session = ssh_connect("nicholasd@noumultifancl02")
-launch_machine.stem = "/home/nicholasd/spatial.sampling.sim.manuscript/Index/Simple120/"
+session = ssh_connect("nicholasd@suvofpsubmit")
+launch_machine.stem = "/home/nicholasd/spatial.sampling.sim.manuscript/Index/Simple120_moreRAM/"
 ssh_exec_wait(session, command = paste0("mkdir -p ",launch_machine.stem))
 
 condor.files.dir = paste0(project.dir,"condor/condor.files/")
 condor.loading.dock.dir = paste0(project.dir,"condor/condor_loading_dock/")
-reps = 81:100 # which reps to use to calculate the indices
+reps = 21:100 # which reps to use to calculate the indices
+
+# upload R portable one time
+    scp_upload(session,files=paste0(project.dir,"condor/condor_files/r361port.tar.gz"),to="/home/nicholasd/")
+	
+# tar & upload all other files one time
+	file.copy(from=paste0(project.dir,"Background_Data/data.dt.RData"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"Background_Data/sst.storage.df.RData"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"Background_Data/nino.df.RData"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"R/Fn/fn.add.catchability.r"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"SimData/simple.true.index.RData"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"condor/condor_files/rm_except"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"condor/condor_files/VAST_v8_3_0.cpp"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"condor/condor_files/VAST_v8_3_0.o"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+	file.copy(from=paste0(project.dir,"condor/condor_files/VAST_v8_3_0.so"),to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
+
+	TarList=c("data.dt.RData", "fn.add.catchability.r", "nino.df.RData", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*" )
+	shell(paste0("cd ",condor.loading.dock.dir,"& C:/cygwin64/bin/tar.exe -czvf Background.tar.gz ",paste(TarList,collapse=' ')),translate=TRUE)
+    scp_upload(session,files=paste0(condor.loading.dock.dir,c("Background.tar.gz")),to="/home/nicholasd/")
+
+# clean-up
+   	file.remove(paste0(condor.loading.dock.dir,list.files(condor.loading.dock.dir)))
+	rm(list=c("TarList"))
+
 
 for(q in c("noQ","Q"))
 {
@@ -36,10 +59,6 @@ for(q in c("noQ","Q"))
 				file.copy(from=paste0(project.dir,"R/Condor/",c("condor_noQ.sub","runR_noQ.bat","samp.dt.names.txt")), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
 				file.copy(from=paste0(project.dir,"R/Scripts/",c("condor_run.noQ.r")), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
 			}
-			file.copy(from=paste0(project.dir,"Background_Data/",c("data.dt.RData","nino.df.RData","sst.storage.df.RData")), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
-			file.copy(from=paste0(project.dir,"R/Fn/",c("fn.add.catchability.r")), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
-			file.copy(from=paste0(project.dir,"SimData/",c("simple.true.index.RData")), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
-			file.copy(from=paste0(project.dir,"condor/condor_files/",list.files(paste0(project.dir,"condor/condor_files/"))), to=condor.loading.dock.dir, overwrite = TRUE, recursive = FALSE, copy.mode=TRUE)
 
 		# dos2unix: runR_*.bat
 			if(q == "Q")
@@ -56,10 +75,10 @@ for(q in c("noQ","Q"))
 		# create Start.tar.gz: data.dt.RData, fn.add.catchability.r, nino.df.RData, r361port.tar.gz, rm_except, simple.true.index.RData, sst.storage.df.RData, VAST_v8_3_0.* 
 			if(q == "Q")
 			{
-				TarList=c("condor_run.Q.r","data.dt.RData", "fn.add.catchability.r", "nino.df.RData", "r361port.tar.gz", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*")
+				TarList=c("condor_run.Q.r")
 				shell(paste0("cd ",condor.loading.dock.dir,"& C:/cygwin64/bin/tar.exe -czvf Start.tar.gz ",paste(TarList,collapse=' ')),translate=TRUE)
 			} else {
-				TarList=c("condor_run.noQ.r","nino.df.RData", "r361port.tar.gz", "rm_except", "simple.true.index.RData", "sst.storage.df.RData", "VAST_v8_3_0.*")
+				TarList=c("condor_run.noQ.r")
 				shell(paste0("cd ",condor.loading.dock.dir,"& C:/cygwin64/bin/tar.exe -czvf Start.tar.gz ",paste(TarList,collapse=' ')),translate=TRUE)
 			}
 

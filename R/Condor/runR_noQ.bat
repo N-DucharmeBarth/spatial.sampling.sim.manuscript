@@ -7,6 +7,8 @@ set
 
 # Upack everything from the tar file
 tar -xzmf Start.tar.gz
+tar -xzmf Background.tar.gz
+
 
 # Untar the R executable
 tar -xzf r361port.tar.gz
