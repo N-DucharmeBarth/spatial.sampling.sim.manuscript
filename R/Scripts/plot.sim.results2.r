@@ -69,7 +69,7 @@
 	   	ggplot2::geom_line(data = plot.dt[Type=="Nominal"], ggplot2::aes(x=Year,y=Index),color="gray70") +
 	    ggplot2::geom_ribbon(data = plot.dt[Type=="Estimated"],  ggplot2::aes(x=Year, ymin=l95,ymax=u95),color=NA,fill="#90caf9") +
 	    ggplot2::geom_line(data = plot.dt[Type=="Estimated"], ggplot2::aes(x=Year,y=Index),color="#005cb2") +
-		ggplot2::geom_point(data = true.df, ggplot2::aes(x=Year,y=True),size=0.75) +
+		ggplot2::geom_line(data = true.df, ggplot2::aes(x=Year,y=True)) +
 	    ggthemes::theme_few() +  ggplot2::scale_fill_manual(values=scales::alpha(c("#03a9f4","gray70","black"),0.5),name = "Index Type") +  ggplot2::scale_color_manual(values = c("#0277bd","gray30","black"),name = "Index Type")
 	ggsave(filename=paste0("sim.ts.example.png"), plot = p, device = "png", path = "Plots/",
   			scale = 1, width = 16, height = 9, units = c("in"),
