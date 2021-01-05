@@ -11,6 +11,7 @@
 
 # load packages
 	library(data.table)
+	library(magrittr)
 	library(ndd.vast.utils)
 	data(skj.alt2019.shp)
 
@@ -31,7 +32,8 @@
 
 # plot
 	png(filename = "Plots/vessel.catchability.png", width = 10, height = 10, units = "in", res = 300)
-	layout(matrix(c(1,2,1,3),nrow=2,ncol=2),heights=c(0.6,0.4))
+	layout(matrix(c(1,2,4,1,3,4),nrow=3,ncol=2),heights=c(0.4,0.3,0.3))
+	layout.show(4)
 	tmp = add.catchability(samp.dt,seed = r,n.vessel.target = 90,new.entry.target=30,cv = 0.15,plot=TRUE)
 
 	# plot dist poles per class
@@ -53,5 +55,10 @@
 		lines(q.dt[Class=="OS",.(Poles,Q)],col="#e53935",lwd=2)
 		lines(q.dt[Class=="DW",.(Poles,Q)],col="#2196f3",lwd=2)
 
+		par(mar=c(5,5,1,5))
+		q.dt = as.data.table(tmp)[,.(q=mean(q)),by=Year] %>% .[,q:=scale(q)]
+		plot(1, 1, type = "n", axes = TRUE, xlab = "Year", ylab = "",xlim=c(-0.1*max(q.dt$Year),1.1*max(q.dt$Year)),ylim=range(pretty(q.dt$q)),cex.lab=1.5,cex.axis=1.5,las=1)
+		lines(q.dt,lwd=2)
+		text(0,2,"Average set-specific catchability (relative)",adj=c(0,1),cex=1.5)
 
 	dev.off()

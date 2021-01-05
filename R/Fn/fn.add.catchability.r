@@ -78,7 +78,7 @@ add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.targe
 			par(mar=c(5,5,1,5))
 			plot(1, 1, type = "n", axes = FALSE, xlab = "", ylab = "",xlim=c(-0.1*max(data$Year),1.1*max(data$Year)),ylim=c(0,nrow(vessel.df)+1),cex.lab=1.5,cex.axis=1.5,las=1)
 			axis(side=4, at = pretty(c(0,nrow(vessel.df)+1)),cex.axis=1.5,las=1)
-			mtext("Number of unique vessels", side=4, line=3,cex=1.5)
+			mtext("Number of unique vessels", side=4, line=3,cex=1)
 			
 			tot.activ.v = sapply(1:max(data$Year),function(x)sum(cbind( vessel.df[,2] <= x & vessel.df[,3] >= x )))
 			polygon(c(1:max(data$Year),rev(1:max(data$Year))),c(tot.activ.v,rep(0,length(tot.activ.v))),border="gray65",col="gray90")
@@ -122,7 +122,8 @@ add.catchability = function(data,seed = 123,n.vessel.target = 20,new.entry.targe
 
  	# sample
  		data$Response_variable = data$True_Abundance*q.df$Q
+ 		data$q = q.df$q
 
  	# return
- 		return(data[,c("Response_variable","Year","Lon","Lat","Vessel","Gear_Config","Class","Poles")])
+ 		return(data[,c("Response_variable","Year","Lon","Lat","Vessel","Gear_Config","Class","Poles","q")])
 }

@@ -169,7 +169,7 @@
 #____________________________________________________________________________________________________________________________________________________
 # make plots
 
-	plot.titration.dt = titration.dt %>% .[region %in% c(1,2,9)] %>% .[,Distance:=factor(ceiling(max.dist/100)*100,levels=sort(unique(ceiling(max.dist/100)*100)))] %>%
+	plot.titration.dt = titration.dt %>% .[region %in% c(1,2,9)] %>% .[,Distance:=factor((ceiling(max.dist/100)*100)/1000,levels=sort(unique((ceiling(max.dist/100)*100)/1000)))] %>%
 										 .[,Catchability:=factor(ifelse(q,"With catchability (Q)","Without catchability (noQ)"))] %>%
 										 .[,Region := factor(as.character(region),levels=c("1","2","9"),labels=c("WCPO","Region 1","Region 8"))] %>%
 										 .[,prop.block:=floor(prop/10)*10] %>% .[prop.block==100,prop.block:=90] %>% .[,prop.block:=factor(as.character(prop.block),levels=rev(c("0","10","20","30","40","50","60","70","80","90")),labels=rev(c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90-100")))]
@@ -177,24 +177,24 @@
 
 	p = plot.titration.dt %>% ggplot2::ggplot() + 
      		ggplot2::geom_boxplot(ggplot2::aes(x=Distance, y=rmse,fill=prop.block),outlier.color="gray60") + 
-     		ggplot2::geom_hline(yintercept = 0,size=1,linetype="longdash",color="black") + ggplot2::ylab("RMSE") + ggplot2::xlab("Maximum distance from JP sampled") +
-     		ggplot2::facet_grid( Catchability ~ Region) + ggthemes::theme_few() + ggplot2::discrete_scale(aesthetics="fill",scale_name="Area sampled (%)",name="Area sampled (%)",palette=colorRampPalette(c("#af4448","#e57373","#f06292","#ba68c8","#9575cd","#7986cb","#64b5f6")))
+     		ggplot2::geom_hline(yintercept = 0,size=1,linetype="longdash",color="black") + ggplot2::ylab("RMSE") + ggplot2::xlab("Maximum distance from JP sampled (1,000 km)") +
+     		ggplot2::facet_grid( Catchability ~ Region) + ggthemes::theme_few(base_size = 20) + ggplot2::discrete_scale(aesthetics="fill",scale_name="Area sampled (%)",name="Area sampled (%)",palette=colorRampPalette(c("#af4448","#e57373","#f06292","#ba68c8","#9575cd","#7986cb","#64b5f6")))
     ggplot2::ggsave(filename=paste0("rmse.titration.png"), plot = p, device = "png", path = "Plots/",
   			scale = 1.25, width = 12, height = 6.75, units = c("in"),
   			dpi = 300, limitsize = TRUE)
 
     p = plot.titration.dt %>% ggplot2::ggplot() + 
      		ggplot2::geom_boxplot(ggplot2::aes(x=Distance, y=coverage,fill=prop.block),outlier.color="gray60") + ggplot2::ylim(0,100) +
-     		ggplot2::geom_hline(yintercept = 50,size=1,linetype="longdash",color="black") + ggplot2::ylab("Coverage") + ggplot2::xlab("Maximum distance from JP sampled") +
-     		ggplot2::facet_grid( Catchability ~ Region) + ggthemes::theme_few() + ggplot2::discrete_scale(aesthetics="fill",scale_name="Area sampled (%)",name="Area sampled (%)",palette=colorRampPalette(c("#af4448","#e57373","#f06292","#ba68c8","#9575cd","#7986cb","#64b5f6")))
+     		ggplot2::geom_hline(yintercept = 50,size=1,linetype="longdash",color="black") + ggplot2::ylab("Coverage") + ggplot2::xlab("Maximum distance from JP sampled (1,000 km)") +
+     		ggplot2::facet_grid( Catchability ~ Region) + ggthemes::theme_few(base_size = 20) + ggplot2::discrete_scale(aesthetics="fill",scale_name="Area sampled (%)",name="Area sampled (%)",palette=colorRampPalette(c("#af4448","#e57373","#f06292","#ba68c8","#9575cd","#7986cb","#64b5f6")))
      ggplot2::ggsave(filename=paste0("coverage.titration.png"), plot = p, device = "png", path = "Plots/",
   			scale = 1.25, width = 12, height = 6.75, units = c("in"),
   			dpi = 300, limitsize = TRUE)
 
     p = plot.titration.dt %>% ggplot2::ggplot() + 
      		ggplot2::geom_boxplot(ggplot2::aes(x=Distance, y=bias,fill=prop.block),outlier.color="gray60") + ggplot2::ylim(-0.5,1.5) +
-     		ggplot2::geom_hline(yintercept = 1,size=1,linetype="longdash",color="black") + ggplot2::ylab("Bias") + ggplot2::xlab("Maximum distance from JP sampled") +
-     		ggplot2::facet_grid( Catchability ~ Region) + ggthemes::theme_few() + ggplot2::discrete_scale(aesthetics="fill",scale_name="Area sampled (%)",name="Area sampled (%)",palette=colorRampPalette(c("#af4448","#e57373","#f06292","#ba68c8","#9575cd","#7986cb","#64b5f6")))
+     		ggplot2::geom_hline(yintercept = 1,size=1,linetype="longdash",color="black") + ggplot2::ylab("Bias") + ggplot2::xlab("Maximum distance from JP sampled (1,000 km)") +
+     		ggplot2::facet_grid( Catchability ~ Region) + ggthemes::theme_few(base_size = 20) + ggplot2::discrete_scale(aesthetics="fill",scale_name="Area sampled (%)",name="Area sampled (%)",palette=colorRampPalette(c("#af4448","#e57373","#f06292","#ba68c8","#9575cd","#7986cb","#64b5f6")))
      ggplot2::ggsave(filename=paste0("bias.titration.png"), plot = p, device = "png", path = "Plots/",
   			scale = 1.25, width = 12, height = 6.75, units = c("in"),
   			dpi = 300, limitsize = TRUE)
