@@ -20,8 +20,8 @@
 #____________________________________________________________________________________________________________________________________________________________________________
 # load
 	load("SimData/simple.true.index.RData")
-	load("Index/ResultsDF/ts.df.MR.RData")
-	load("Index/ResultsDF/nominal.df.RData")
+	load("Index/ResultsDF/ts.df.MRwR.RData")
+	load("Index/ResultsDF/nominal.df.wR.RData")
 
 #____________________________________________________________________________________________________________________________________________________________________________
 # plot example time series 
@@ -29,7 +29,7 @@
 	tmp.dt = data.table::as.data.table(tmp.df) %>% .[Region=="all"&mgc<=1e-04] %>% .[Model=="Enviro",Model:="E"] %>%
 			 .[Model=="NoEnviro",Model:="noE"] %>% .[Model=="EnviroSVC",Model:="ESVC"] %>%
 			 .[Model=="NoEnviroSVC",Model:="noESVC"] %>% .[Catchability=="Q",Model := paste0(Catchability,"-",Model)] %>% .[,Model:=as.factor(Model)] %>%
-			 .[,Type := "Estimated"]
+			 .[,Type := "Estimated"] %>% .[,Scenario:=factor(Scenario,levels=c("Random","Preferential","Contraction","Expansion","Fixed","Rotating"))]
 
 	# tmp.dt = tmp.dt[,.(Index = median(Index),Index.10 = quantile(Index,probs=0.1),Index.90 = quantile(Index,probs=0.9)),by=.(Scenario,Catchability,Model,Region,Year)]
 	# tmp.dt$Model = "Estimated"
@@ -56,12 +56,12 @@
 		list.dt[[4]] = tmp.dt[Scenario == "Expansion" & Catchability == "Q" & Replicate == 46]
 		list.dt[[5]] = tmp.dt[Scenario == "Fixed" & Catchability == "noQ" & Replicate == 62]
 		list.dt[[6]] = tmp.dt[Scenario == "Fixed" & Catchability == "Q" & Replicate == 54]
-		list.dt[[7]] = tmp.dt[Scenario == "Preferential" & Catchability == "noQ" & Replicate == 32]
+		list.dt[[7]] = tmp.dt[Scenario == "Preferential" & Catchability == "noQ" & Replicate == 26]
 		list.dt[[8]] = tmp.dt[Scenario == "Preferential" & Catchability == "Q" & Replicate == 76]
-		list.dt[[9]] = tmp.dt[Scenario == "Random" & Catchability == "noQ" & Replicate == 12]
+		list.dt[[9]] = tmp.dt[Scenario == "Random" & Catchability == "noQ" & Replicate == 10]
 		list.dt[[10]] = tmp.dt[Scenario == "Random" & Catchability == "Q" & Replicate == 15]
-		list.dt[[11]] = tmp.dt[Scenario == "Rotating" & Catchability == "noQ" & Replicate == 100]
-		list.dt[[12]] = tmp.dt[Scenario == "Rotating" & Catchability == "Q" & Replicate == 19]
+		list.dt[[11]] = tmp.dt[Scenario == "Rotating" & Catchability == "noQ" & Replicate == 99]
+		list.dt[[12]] = tmp.dt[Scenario == "Rotating" & Catchability == "Q" & Replicate == 18]
 		plot.dt = data.table::rbindlist(list.dt) %>% .[Type=="Estimated",l95 := Index-SE*1.96] %>% .[Type=="Estimated",u95 := Index+SE*1.96]
 
 	p = plot.dt %>% ggplot2::ggplot() +  
@@ -71,20 +71,20 @@
 	    ggplot2::geom_line(data = plot.dt[Type=="Estimated"], ggplot2::aes(x=Year,y=Index),color="#005cb2") +
 		ggplot2::geom_line(data = true.df, ggplot2::aes(x=Year,y=True)) +
 	    ggthemes::theme_few() +  ggplot2::scale_fill_manual(values=scales::alpha(c("#03a9f4","gray70","black"),0.5),name = "Index Type") +  ggplot2::scale_color_manual(values = c("#0277bd","gray30","black"),name = "Index Type")
-	ggsave(filename=paste0("sim.ts.example.png"), plot = p, device = "png", path = "Plots/",
+	ggsave(filename=paste0("sim.ts.example.wR.png"), plot = p, device = "png", path = "Plots/",
   			scale = 1, width = 16, height = 9, units = c("in"),
   			dpi = 300, limitsize = TRUE)
 
 #____________________________________________________________________________________________________________________________________________________________________________
 # plot metric boxplots
-	load("Index/ResultsDF/metric.MR.df.RData")
+	load("Index/ResultsDF/metric.MRwR.df.RData")
 
 	metric.dt = data.table::as.data.table(metric.df) %>% .[Region=="all"&mgc<=1e-04] %>% .[Model=="Enviro",Model:="E"] %>%
 			 .[Model=="NoEnviro",Model:="noE"] %>% .[Model=="EnviroSVC",Model:="ESVC"] %>%
 			 .[Model=="NoEnviroSVC",Model:="noESVC"] %>% .[Catchability=="Q",Model := paste0(Catchability,"-",Model)] %>% .[,Model:=factor(Model,levels=c("noE","noESVC","E","ESVC","Q-noE","Q-noESVC","Q-E","Q-ESVC"))] %>%
-			 .[Metric %in% c("bias","rmsd","cover.50")] %>% .[,Metric:=factor(Metric,levels=c("rmsd","bias","cover.50"),labels=c("RMSD","Bias","Coverage"))]
+			 .[Metric %in% c("bias","rmsd","cover.50")] %>% .[,Metric:=factor(Metric,levels=c("rmsd","bias","cover.50"),labels=c("RMSE","Bias","Coverage"))] %>% .[,Scenario:=factor(Scenario,levels=c("Random","Preferential","Contraction","Expansion","Fixed","Rotating"))]
 
-			u.scenario = sort(unique(metric.dt$Scenario))
+			u.scenario = levels(metric.dt$Scenario)
 			u.metric = sort(unique(metric.dt$Metric))
 			u.model = sort(unique(metric.dt$Model))
 			# ylim.list = list(RMSD=range(pretty(metric.dt[Metric=="RMSD"]$Value,na.rm=TRUE)),Bias=range(pretty(metric.dt[Metric=="Bias"]$Value,na.rm=TRUE)),Coverage=range(pretty(metric.dt[Metric=="Coverage"]$Value,na.rm=TRUE)))
@@ -93,7 +93,7 @@
 			fill.vec = c("#ffebee","#ffcdd2","#ef9a9a","#e57373","#e3f2fd","#bbdefb","#90caf9","#64b5f6") #100,400,300,600
 			line.vec = c(rep("#7f0000",4),rep("#002f6c",4))
 
-			png(filename = "Plots/sim.metrics.png", width = 16, height = 9, units = "in", res=300,pointsize = 12, bg = "white")
+			png(filename = "Plots/sim.metrics.wR.png", width = 16, height = 9, units = "in", res=300,pointsize = 12, bg = "white")
 			layout(matrix(c(34,28,29,30,31,32,33,19,1,2,3,4,5,6,20,7,8,9,10,11,12,21,13,14,15,16,17,18,35,22,23,24,25,26,27),nrow=5,ncol=7,byrow = TRUE),widths=c(0.25,rep(1,6)),heights=c(0.1,rep(1,3),0.4))
 			layout.show(35)
 			for(j in 1:length(u.metric))

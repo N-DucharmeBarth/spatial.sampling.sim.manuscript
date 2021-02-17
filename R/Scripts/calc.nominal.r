@@ -39,7 +39,7 @@
 			if(r<100){save.id = paste0("0",save.id)}
 			if(r<10){save.id = paste0("0",save.id)}
 			# load replicate
-				load(paste0("SimData/Simple120/",s,"/samp.dt.",save.id,".RData"))
+				load(paste0("SimData/Simple120_wReplacement/",s,"/samp.dt.",save.id,".RData"))
 
 
 				# no Catchability
@@ -72,5 +72,5 @@
 
 # change order of columns TS & Region
 	nominal.df = nominal.df[,c(1,2,3,4,6,5,7,8,9)]
-	save(nominal.df,file="Index/ResultsDF/nominal.df.RData")
+	save(nominal.df,file="Index/ResultsDF/nominal.df.wR.RData")
 

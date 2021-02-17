@@ -62,8 +62,8 @@ for(q in c("noQ","Q"))
 		{
 			pnt = which(diag.df$Scenario == s & diag.df$Catchability == q & diag.df$Replicate == r)
 			# read vast_output & read from log
-				try(load(paste0("Index/Simple120_moreRAM/",s,"_",q,"/vast/",r,".vast_list.RData")),silent=TRUE)
-				log = try(readLines(paste0("Index/Simple120_moreRAM/",s,"_",q,"/log/",list.files(paste0("Index/Simple120_moreRAM/",s,"_",q,"/log"))[grep(paste0(".",r,".condor_R.log"),list.files(paste0("Index/Simple120_moreRAM/","/",s,"_",q,"/log")),fixed=TRUE)])),silent=TRUE)
+				try(load(paste0("Index/Simple120_wReplacement/",s,"_",q,"/vast/",r+20,".vast_list.RData")),silent=TRUE)
+				log = try(readLines(paste0("Index/Simple120_wReplacement/",s,"_",q,"/log/",list.files(paste0("Index/Simple120_wReplacement/",s,"_",q,"/log"))[grep(paste0(".",r+20,".condor_R.log"),list.files(paste0("Index/Simple120_wReplacement/","/",s,"_",q,"/log")),fixed=TRUE)])),silent=TRUE)
 				if("vast_list" %in% ls() == FALSE){vast_list = NULL}
 			# parse log
 				if(length(log)>1)
@@ -184,7 +184,7 @@ dir.create(paste0("Index/ResultsDF/"),recursive=TRUE,showWarnings=FALSE)
 # 	ts.df = rbind(ts.df[-which(ts.df$Replicate %in% reps),],tmp.ts.df)
 
 # save
-	save(diag.df,file="Index/ResultsDF/diag.MR.df.RData")
-	save(metric.df,file="Index/ResultsDF/metric.MR.df.RData")
-	save(ts.df,file="Index/ResultsDF/ts.df.MR.RData")
+	save(diag.df,file="Index/ResultsDF/diag.MRwR.df.RData")
+	save(metric.df,file="Index/ResultsDF/metric.MRwR.df.RData")
+	save(ts.df,file="Index/ResultsDF/ts.df.MRwR.RData")
 

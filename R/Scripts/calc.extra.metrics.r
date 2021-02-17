@@ -14,8 +14,8 @@
 	setwd(project.dir)
 
 # bring in metric.df
-	load("Index/ResultsDF/metric.MR.df.RData")
-	load("Index/ResultsDF/ts.df.MR.RData")
+	load("Index/ResultsDF/metric.MRwR.df.RData")
+	load("Index/ResultsDF/ts.df.MRwR.RData")
 	load("SimData/simple.true.index.RData")
 	ts.dt = as.data.table(ts.df)
 	setkey(ts.dt,Scenario,Catchability,Replicate,Model,Region)
@@ -101,5 +101,5 @@
 	metric.df = unique(metric.df)
 
 # save
-	save(metric.df,file="Index/ResultsDF/metric.MR.df.RData")
+	save(metric.df,file="Index/ResultsDF/metric.MRwR.df.RData")
 
